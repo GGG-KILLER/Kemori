@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using System.Windows.Forms;
 
-namespace GUtils.Forms
+namespace Kemori.UI
 {
     /// <summary>
     /// Wraps System.Windows.Forms.OpenFileDialog to make it present

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Kemori.Classes
+namespace Kemori.Utils
 {
     internal class ReflectionUtils
     {
@@ -36,7 +36,8 @@ namespace Kemori.Classes
             var type = typeof ( T );
 
             // Makes sure that the type is an interface or a class
-            Assert.Test ( type.IsInterface || type.IsClass, "T must be a class or interface." );
+            if ( !type.IsInterface && !type.IsClass )
+                throw new Exception ( "T must be a class or interface." );
 
             // Finds out if it's an interface or class
             var isInterface = type.IsInterface;

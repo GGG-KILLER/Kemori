@@ -7,7 +7,7 @@ using System.Threading;
 using System.Web;
 
 // Credit goes to http://stackoverflow.com/a/32426051/2671392 (user https://stackoverflow.com/users/5296568/maximilian-gerhardt)
-namespace Kemori.Classes
+namespace Kemori.Web
 {
     public class CloudflareEvader
     {

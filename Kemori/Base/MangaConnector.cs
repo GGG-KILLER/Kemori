@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Kemori.Classes;
 using Kemori.Interfaces;
 using Kemori.Resources;
+using Kemori.Utils;
 
 namespace Kemori.Base
 {
@@ -114,6 +115,91 @@ namespace Kemori.Base
         public virtual void InitHTTP ( )
         {
             HTTP = new Fetch ( );
+        }
+
+        // Shamefully copied from hakuneko (few modifications):
+        /// <summary>
+        /// Normalizes chapter numbers so they all follow the same style
+        /// inside the application
+        /// </summary>
+        /// <param name="ChapterNumber">The string that contains the chapter number</param>
+        /// <returns></returns>
+        public String NormalizeChapterNumber ( String ChapterNumber )
+        {
+            /*
+             * From hakuneko:
+             * 
+             * Plain chapter variations:
+             * %c = "13-18"
+             * %c = "13"
+             * %c = "13.5"
+             * %c = "13v2"
+             * %c = "13v.2"
+             * %c = "13.5v2"
+             * %c = "13.5v.2"
+             * 
+             * Variations combined with text:
+             * %ct = "Text Text"
+             * %ct = "%c Text Text"
+             * %ct = "Text Text %c"
+             */
+
+            // Remove preceding/suceeding text from chapter number
+            var chNumberResidualLength = 0;
+
+            // Sometimes chapter numbers are followed by text
+            var posFirstSpace = ChapterNumber.IndexOf ( " " );
+
+            // Sometimes chapter numbers are preceded by text
+            var posLastSpace = ChapterNumber.LastIndexOf ( " " );
+
+            if ( posFirstSpace > -1 && posLastSpace > -1 )
+            {
+                // NOTE: in case numbers are at beginning and ending, the number at beginning got higher priority
+                if ( Is.Int ( ChapterNumber.Substring ( 0, posFirstSpace ) ) )
+                {
+                    return ChapterNumber.Substring ( 0, posFirstSpace );
+                }
+
+                if ( Is.Int ( ChapterNumber.Substring ( posLastSpace + 1 ) ) )
+                {
+                    return ChapterNumber.Substring ( posLastSpace + 1 );
+                }
+            }
+
+            // sometimes chapter numbers are spanned with a hyphen (i.e. 13-18)
+            var posHyphen = ChapterNumber.IndexOf ( '-' );
+            if ( posHyphen > -1 )
+            {
+                var from = ChapterNumber.Substring ( 0, posHyphen );
+                var to = ChapterNumber.Substring ( posHyphen );
+
+                from = NormalizeChapterNumber ( from );
+                to = NormalizeChapterNumber ( to );
+
+                return $"{from}-{to}";
+            }
+
+            // sometimes chapter numbers are followed by version (i.e. 13v2, 13v.2)
+            var posVchar = ChapterNumber.IndexOf ( 'v' );
+            if ( posVchar > -1 )
+            {
+                chNumberResidualLength = Math.Max ( chNumberResidualLength, ChapterNumber.Length - posVchar );
+            }
+
+            // sometimes chapter numbers contains a dot (i.e. 13.5, 13.5v2, 13.5.v2)
+            var posDot = ChapterNumber.IndexOf ( '.' );
+            if ( posDot > -1 )
+            {
+                chNumberResidualLength = Math.Max ( chNumberResidualLength, ChapterNumber.Length - posDot );
+            }
+
+            // Replaces the while *ChapterNumber = wxT("0") + *ChapterNumber
+            return ChapterNumber.PadLeft (
+                // This replaces the ChapterNumber.Length - chNumberResidualLength < 4
+                Math.Max ( 4 - ( ChapterNumber.Length + chNumberResidualLength ), 0 ),
+                '0'
+            );
         }
     }
 }

@@ -130,9 +130,9 @@ namespace Kemori.Classes
         }
 
         /// <summary>
-        /// Returns a path for a provided path
+        /// Returns a path for a provided <see cref="Manga"/>
         /// </summary>
-        /// <param name="Manga">Manga to return path for</param>
+        /// <param name="Manga"><see cref="Manga"/> to return path for</param>
         /// <returns></returns>
         public String PathForManga ( Manga Manga )
         {
@@ -142,11 +142,43 @@ namespace Kemori.Classes
             );
         }
 
+        /// <summary>
+        /// Returns a path for a provided manga
+        /// </summary>
+        /// <param name="Name">Manga to return path for</param>
+        /// <returns></returns>
+        public String PathForManga ( String Name )
+        {
+            return Path.Combine (
+                ConfigsManager.SavePath,
+                SafeFolderName ( Name )
+            );
+        }
+
+        /// <summary>
+        /// Returns a path for a provided <see cref="MangaChapter"/>
+        /// </summary>
+        /// <param name="Chapter"><see cref="MangaChapter"/> to return path for</param>
+        /// <returns></returns>
         public String PathForChapter ( MangaChapter Chapter )
         {
             return Path.Combine (
                 PathForManga ( Chapter.Manga ),
                 SafeFolderName ( Chapter.Name )
+            );
+        }
+
+        /// <summary>
+        /// Returns a pth for a provided manga chapter
+        /// </summary>
+        /// <param name="MangaName"></param>
+        /// <param name="ChapterName"></param>
+        /// <returns></returns>
+        public String PathForChapter(String MangaName, String ChapterName)
+        {
+            return Path.Combine (
+                PathForManga ( MangaName ),
+                SafeFolderName ( ChapterName )
             );
         }
 

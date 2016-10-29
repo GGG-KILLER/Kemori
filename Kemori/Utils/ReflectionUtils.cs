@@ -14,12 +14,13 @@ namespace Kemori.Utils
         /// <param name="Ns">Namespace to search in</param>
         /// <param name="Condition">Condition to check for the types</param>
         /// <returns></returns>
-        public static IEnumerable<Type> GetAllTypesInNamespace ( Assembly assm, String Ns, Func<Type, Boolean> Condition = null )
+        public static Type[] GetAllTypesInNamespace ( Assembly assm, String Ns, Func<Type, Boolean> Condition = null )
         {
             Condition = Condition ?? ( _ => true );
             return assm.GetTypes ( )
                 .Where ( t => t.Namespace.Equals ( Ns, StringComparison.Ordinal ) )
-                .Where ( Condition );
+                .Where ( Condition )
+                .ToArray ( );
         }
 
         /// <summary>
@@ -30,7 +31,7 @@ namespace Kemori.Utils
         /// <param name="assembly">Assembly to search in</param>
         /// <param name="Ns">Namespace to search in</param>
         /// <returns></returns>
-        public static IEnumerable<T> GetTypesInNamespace<T> ( Assembly assembly, String Ns )
+        public static T[] GetTypesInNamespace<T> ( Assembly assembly, String Ns )
         {
             // Gets the type of T
             var type = typeof ( T );
@@ -49,7 +50,8 @@ namespace Kemori.Utils
                 return isInterface ? assemb.GetInterface ( type.FullName ) != null : TypeIsSameOrChild ( assemb, type );
             } )
                 // Creates an instance of each one and returns them
-                .Select ( typ => ( T ) Activator.CreateInstance ( typ ) );
+                .Select ( typ => ( T ) Activator.CreateInstance ( typ ) )
+                .ToArray ( );
         }
 
         /// <summary>

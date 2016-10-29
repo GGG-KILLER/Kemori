@@ -37,6 +37,7 @@ namespace Kemori.Extensions
         /// <returns></returns>
         public static String BeforeLast ( this String @this, Char Separator, Int32 startIndex = 0 )
         {
+            startIndex = startIndex > 0 ? startIndex : @this.Length - 1;
             return @this.Substring ( 0, @this.LastIndexOf ( Separator, startIndex ) );
         }
 
@@ -49,6 +50,7 @@ namespace Kemori.Extensions
         /// <returns></returns>
         public static String BeforeLast ( this String @this, String Separator, Int32 startIndex = 0 )
         {
+            startIndex = startIndex > 0 ? startIndex : @this.Length - 1;
             return @this.Substring (
                 0,
                 @this.LastIndexOf ( Separator, startIndex ) + Separator.Length
@@ -90,6 +92,7 @@ namespace Kemori.Extensions
         /// <returns></returns>
         public static String AfterLast ( this String @this, Char Separator, Int32 startIndex = 0 )
         {
+            startIndex = startIndex > 0 ? startIndex : @this.Length - 1;
             return @this.Substring ( @this.LastIndexOf ( Separator, startIndex ) + 1 );
         }
 
@@ -102,6 +105,7 @@ namespace Kemori.Extensions
         /// <returns></returns>
         public static String AfterLast ( this String @this, String Separator, Int32 startIndex = 0 )
         {
+            startIndex = startIndex > 0 ? startIndex : @this.Length - 1;
             return @this.Substring (
                 @this.LastIndexOf ( Separator, startIndex ) + Separator.Length
             );
@@ -140,6 +144,7 @@ namespace Kemori.Extensions
         /// <returns></returns>
         public static Int32 LastIndexOfAfter(this String @this, Char value, Int32 startIndex = 0)
         {
+            startIndex = startIndex > 0 ? startIndex : @this.Length - 1;
             return @this.LastIndexOf ( value, startIndex ) + 1;
         }
 
@@ -152,6 +157,7 @@ namespace Kemori.Extensions
         /// <returns></returns>
         public static Int32 LastIndexOfAfter(this String @this, String value, Int32 startIndex = 0)
         {
+            startIndex = startIndex > 0 ? startIndex : @this.Length - 1;
             return @this.LastIndexOf ( value, startIndex ) + value.Length;
         }
     }

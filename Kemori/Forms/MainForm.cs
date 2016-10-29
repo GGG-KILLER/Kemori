@@ -49,6 +49,7 @@ namespace Kemori.Forms
         public MainForm ( )
         {
             InitializeComponent ( );
+            new Logger ( ).InitAsync ( );
         }
 
         #region Event listeners
@@ -60,6 +61,11 @@ namespace Kemori.Forms
         /// <param name="e"></param>
         private async void MainForm_LoadAsync ( Object sender, EventArgs e )
         {
+            await ConfigsManager.LoadAsync ( );
+
+            if ( ConfigsManager.SavePath == null )
+                GetSavePathPoignantly ( );
+
             // Initialize status bar
             ssLoadProgress.Visible = true;
             pbLoadPorgress.Value = 0;
@@ -227,6 +233,29 @@ namespace Kemori.Forms
         #endregion Event listeners
 
         /// <summary>
+        /// Forces the user to enter a save path
+        /// </summary>
+        private void GetSavePathPoignantly ( )
+        {
+            var fsd = new FolderSelectDialog
+            {
+                Title = "Kemori - Choose Save Path"
+            };
+
+            while ( !fsd.ShowDialog ( ) )
+            {
+                var res = MessageBox.Show ( this, "A save path is required for the program to work!", "Kemori - Error", MessageBoxButtons.OKCancel );
+
+                if ( res == DialogResult.Cancel )
+                    Application.Exit ( );
+            }
+
+            ConfigsManager.SavePath = fsd.FileName;
+        }
+
+        void Msg ( Object o ) { MessageBox.Show ( this, "MSG: " + o ); }
+
+        /// <summary>
         /// Loads all connectors into the UI and Form
         /// </summary>
         /// <returns></returns>
@@ -235,18 +264,12 @@ namespace Kemori.Forms
             // Load connectors
             ConnectorCollection = ( await ConnectorsManager.GetAllAsync ( ) )
                 .ToArray ( );
+            Msg ( ConnectorCollection.Length );
 
-#if DEBUG
-            Console.WriteLine ( String.Join ( ", ", ConnectorCollection.Select ( c => c + "" ) ) );
-#endif
-
-#if DEBUG
-            lblLoadProgress.Text = "Sorting connectors...";
-#endif
             // Sort connectors
             pbLoadPorgress.Value = 50;
             Array.Sort ( ConnectorCollection, new MCComp ( ) );
-
+            Msg ( ConnectorCollection.Length );
 #if DEBUG
             lblLoadProgress.Text = "Populating connectors combobox...";
 #endif
@@ -254,9 +277,9 @@ namespace Kemori.Forms
             pbLoadPorgress.Value = 75;
             foreach ( var connector in ConnectorCollection )
                 cbConnectors.Items.Add ( connector.Website );
-            cbConnectors.SelectedIndex = 0;
-        }
 
+            Msg ( cbConnectors.Items.Count );
+        }
         /// <summary>
         /// Returns a <see cref="MangaConnector"/> associated to a <see cref="Bookmark"/>
         /// </summary>

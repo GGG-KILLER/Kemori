@@ -31,7 +31,10 @@ namespace Kemori.Controllers
             var assemblies = di.GetFiles ( "*.dll", SearchOption.TopDirectoryOnly )
                 .Where ( fi =>
                 {
-                    return fi.FullName.AfterLast ( Path.DirectorySeparatorChar ).Before ( '.' ) == "Kemori";
+                    Console.WriteLine ( fi.FullName.LastIndexOf ( Path.DirectorySeparatorChar, 0 ) );
+                    var b = fi.FullName.AfterLast ( Path.DirectorySeparatorChar ).Before ( '.' );
+                    Console.WriteLine ( $"T: {b} = {b == "Kemori"}" );
+                    return b == "Kemori";
                 } )
                 .Select ( fi =>
                 {
@@ -53,8 +56,10 @@ namespace Kemori.Controllers
                 .Where ( @as => @as != null )
                 .Where ( @as =>
                 {
-                    return ReflectionUtils.GetTypesInNamespace<MangaConnector> ( @as, "Kemori.Connectors" ).Count ( ) > 1;
+                    return ReflectionUtils.GetTypesInNamespace<MangaConnector> ( @as, "Kemori.Connectors" ).Length > 1;
                 } );
+
+            System.Windows.Forms.MessageBox.Show ( "ASS: " + assemblies.Count ( ) );
 
             var connectors = new List<MangaConnector> ( );
             foreach ( var assembly in assemblies )

@@ -6,7 +6,7 @@ using Kemori.Base;
 using Kemori.Extensions;
 using Kemori.Interfaces;
 
-namespace Kemori.Connectors.MangaFox
+namespace Kemori.Connectors
 {
     public class MangaFoxConnector : MangaConnector
     {

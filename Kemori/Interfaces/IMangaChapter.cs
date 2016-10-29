@@ -32,7 +32,7 @@ namespace Kemori.Interfaces
         /// Number of the chapter (1, 1.5, etc.)
         /// If not available use sequential numbering or the index on the chapter array.
         /// </summary>
-        Single Chapter { get; }
+        String Chapter { get; }
 
         /// <summary>
         /// The links of the pages

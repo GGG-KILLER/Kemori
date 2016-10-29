@@ -9,7 +9,7 @@ namespace Kemori.Base
         /// Chapter number (1, 1.5, etc.)
         /// Use manga chapter array index if not existent.
         /// </summary>
-        public Single Chapter { get; private set; }
+        public String Chapter { get; set; }
 
         private String _hash;
 
@@ -32,20 +32,20 @@ namespace Kemori.Base
         /// <summary>
         /// Link to this chapter (for page getting)
         /// </summary>
-        public String Link { get; private set; }
+        public String Link { get; set; }
 
         /// <summary>
         /// The manga this chapter belongs to
         /// </summary>
-        public Manga Manga { get; private set; }
+        public Manga Manga { get; set; }
 
         /// <summary>
         /// Name of the chapter (if existent)
         /// </summary>
-        public String Name { get; private set; }
+        public String Name { get; set; }
 
         /// <summary>
-        /// Links to the pages
+        /// Links to the page images
         /// </summary>
         public String[] PageLinks { get; private set; }
 
@@ -59,7 +59,7 @@ namespace Kemori.Base
         /// </summary>
         public async void Load ( )
         {
-            this.PageLinks = await Manga.Connector.GetPageLinks ( this );
+            this.PageLinks = await Manga.Connector.GetPageLinksAsync ( this );
             this.Pages = this.PageLinks.Length;
         }
 

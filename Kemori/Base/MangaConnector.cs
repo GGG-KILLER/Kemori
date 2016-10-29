@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
+using Ionic.Zip;
 using Kemori.Classes;
 using Kemori.Interfaces;
 using Kemori.Resources;
@@ -74,7 +76,7 @@ namespace Kemori.Base
         /// </summary>
         /// <param name="Chapter">The chapter</param>
         /// <returns></returns>
-        public async Task<String[]> GetPageLinks ( MangaChapter Chapter )
+        public virtual async Task<String[]> GetPageLinksAsync ( MangaChapter Chapter )
         {
             throw new NotImplementedException ( );
         }
@@ -83,7 +85,7 @@ namespace Kemori.Base
         /// Downloads a chapter from a manga
         /// </summary>
         /// <param name="Chapter">The chapter to download</param>
-        public virtual async Task DownloadChapter ( MangaChapter Chapter )
+        public virtual async Task DownloadChapterAsync ( MangaChapter Chapter )
         {
             throw new NotImplementedException ( );
         }
@@ -93,7 +95,7 @@ namespace Kemori.Base
         /// </summary>
         /// <param name="Manga">The manga to get the chapters from</param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<MangaChapter>> GetChapters ( Manga Manga )
+        public virtual async Task<IEnumerable<MangaChapter>> GetChaptersAsync ( Manga Manga )
         {
             throw new NotImplementedException ( );
         }
@@ -102,7 +104,7 @@ namespace Kemori.Base
         /// Loads all mangas
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<Manga>> UpdateMangaList ( )
+        public virtual async Task<IEnumerable<Manga>> UpdateMangaListAsync ( )
         {
             throw new NotImplementedException ( );
         }
@@ -200,6 +202,68 @@ namespace Kemori.Base
                 Math.Max ( 4 - ( ChapterNumber.Length + chNumberResidualLength ), 0 ),
                 '0'
             );
+        }
+
+        public class ChapterFileProcessor : IDisposable
+        {
+            String root;
+            Boolean Compressed;
+            MangaChapter Chapter;
+            ZipFile ZipFile;
+
+            /// <summary>
+            /// Initializes a chapter processor
+            /// </summary>
+            /// <param name="Chapter"></param>
+            public ChapterFileProcessor ( MangaChapter Chapter )
+            {
+                root = new IO ( ConfigsManager.SavePath )
+                    .PathForChapter ( Chapter );
+                this.Chapter = Chapter;
+
+                if ( Compressed = ConfigsManager.CompressChapters )
+                {
+                    ZipFile = new ZipFile ( root + ".cbz" );
+                }
+            }
+
+            /// <summary>
+            /// Saves a file to the filesystem
+            /// </summary>
+            /// <param name="FileName">File name</param>
+            /// <param name="Contents">Contents of the file</param>
+            public async Task SaveFileAsync ( String FileName, Byte[] Contents )
+            {
+                if ( Compressed )
+                {
+                    ZipFile.AddEntry ( FileName, Contents );
+                }
+                else
+                {
+                    using ( var stream = File.Open ( Path.Combine ( root, FileName ), FileMode.OpenOrCreate ) )
+                        await stream.WriteAsync ( Contents, 0, Contents.Length );
+                }
+            }
+
+            public void Dispose ( )
+            {
+                // Saves the zip file
+                ZipFile?.Save ( );
+
+                // Dispose the ZipFile if it exists
+                ZipFile?.Dispose ( );
+
+                GC.SuppressFinalize ( this );
+            }
+        }
+
+        /// <summary>
+        /// Saves all bytes to the file according to the user's settings (compression, etc.)
+        /// </summary>
+        /// <param name="Chapter">Chapter that is being downloaded</param>
+        public static ChapterFileProcessor GetFileProcessor ( MangaChapter Chapter )
+        {
+            return new ChapterFileProcessor ( Chapter );
         }
     }
 }

@@ -74,7 +74,7 @@ namespace Kemori.Base
         /// </summary>
         public async void Load ( )
         {
-            this.Chapters = ( await Connector.GetChapters ( this ) ).ToArray ( );
+            this.Chapters = ( await Connector.GetChaptersAsync ( this ) ).ToArray ( );
         }
 
         /// <summary>

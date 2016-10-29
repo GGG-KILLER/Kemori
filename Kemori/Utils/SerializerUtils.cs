@@ -1,15 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Kemori.Utils
 {
-    class SerializerUtils
+    internal class SerializerUtils
     {
+        /// <summary>
+        /// Serializes an object to a file
+        /// </summary>
+        /// <param name="graph">Object to serialize</param>
+        /// <param name="FileName">File name to save serialized object</param>
         public static void SerializeToFile ( Object graph, String FileName )
         {
             var formatter = new BinaryFormatter
@@ -22,7 +24,24 @@ namespace Kemori.Utils
                 formatter.Serialize ( stream, graph );
         }
 
-        public static T DeserializeFromFile<T>(String FileName)
+        /// <summary>
+        /// Serializes an object to a file
+        /// </summary>
+        /// <param name="graph">Object to serialize</param>
+        /// <param name="FileName">File name to save serialized object</param>
+        public static async Task SerializeToFileAsync ( Object graph, String FileName )
+        {
+            // BinaryFormmater doesn't has support for asynchronous operations, so we have to do this
+            await Task.Run ( ( ) => SerializeToFile ( graph, FileName ) );
+        }
+
+        /// <summary>
+        /// Deserialized an type from a file
+        /// </summary>
+        /// <typeparam name="T">Type that was serialized</typeparam>
+        /// <param name="FileName">The file to deserialize from</param>
+        /// <returns></returns>
+        public static T DeserializeFromFile<T> ( String FileName )
         {
             var formatter = new BinaryFormatter
             {
@@ -32,6 +51,16 @@ namespace Kemori.Utils
 
             using ( var stream = File.Open ( FileName, FileMode.Open ) )
                 return ( T ) formatter.Deserialize ( stream );
+        }
+
+        /// <summary>
+        /// Deserializes a class from a file asynchronously
+        /// </summary>
+        /// <typeparam name="T">Type that was serialized</typeparam>
+        /// <param name="FileName">The file to deserialize from</param>
+        public static async Task<T> DeserializeFromFileAsync<T> ( String FileName )
+        {
+            return await Task.Run ( ( ) => DeserializeFromFile<T> ( FileName ) );
         }
     }
 }

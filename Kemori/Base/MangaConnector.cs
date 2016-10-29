@@ -23,6 +23,7 @@ namespace Kemori.Base
             InitHTTP ( );
             InitIO ( );
             MangaList = new Manga[0];
+            Logger = new Logger ( );
         }
 
         /// <summary>

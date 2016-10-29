@@ -17,10 +17,7 @@ namespace Kemori.Resources
         /// </summary>
         static ConfigsManager ( )
         {
-            ConfigPath = Path.Combine (
-                Environment.GetFolderPath ( Environment.SpecialFolder.ApplicationData ),
-                "kemori.conf"
-            );
+            ConfigPath = PathUtils.GetPathForFile ( "kemori.conf" );
         }
 
         /// <summary>

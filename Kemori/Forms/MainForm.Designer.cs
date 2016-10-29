@@ -28,25 +28,33 @@
         /// </summary>
         private void InitializeComponent ( )
         {
+            System.Windows.Forms.Label label1;
+            System.Windows.Forms.Label label2;
+            System.Windows.Forms.Label label3;
+            System.Windows.Forms.ColumnHeader chNameHeader;
+            System.Windows.Forms.Label label5;
             this.dlPathTextbox = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.dlPathButton = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.label3 = new System.Windows.Forms.Label();
+            this.cbConnectors = new System.Windows.Forms.ComboBox();
+            this.cbSearch = new System.Windows.Forms.ComboBox();
             this.mangaList = new System.Windows.Forms.ListBox();
-            this.chapterList = new System.Windows.Forms.CheckedListBox();
             this.chapterSelectAll = new System.Windows.Forms.CheckBox();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.downloadProgressBar = new System.Windows.Forms.ToolStripProgressBar();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.downloadProgressLabel = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.chapterLabel = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.mangaLabel = new System.Windows.Forms.ToolStripLabel();
-            this.toolStrip1.SuspendLayout();
+            this.dlButton = new System.Windows.Forms.Button();
+            this.btnBookmark = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.ssLoadProgress = new System.Windows.Forms.StatusStrip();
+            this.lblLoadProgress = new System.Windows.Forms.ToolStripStatusLabel();
+            this.pbLoadPorgress = new System.Windows.Forms.ToolStripProgressBar();
+            this.updateAllBtn = new System.Windows.Forms.Button();
+            this.chList = new System.Windows.Forms.ListView();
+            this.dgvJobs = new System.Windows.Forms.DataGridView();
+            label1 = new System.Windows.Forms.Label();
+            label2 = new System.Windows.Forms.Label();
+            label3 = new System.Windows.Forms.Label();
+            chNameHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            label5 = new System.Windows.Forms.Label();
+            this.ssLoadProgress.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvJobs)).BeginInit();
             this.SuspendLayout();
             // 
             // dlPathTextbox
@@ -61,12 +69,12 @@
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 15);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(83, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Download Path:";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(13, 15);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(83, 13);
+            label1.TabIndex = 1;
+            label1.Text = "Download Path:";
             // 
             // dlPathButton
             // 
@@ -81,55 +89,55 @@
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 41);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(44, 13);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Search:";
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(13, 41);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(44, 13);
+            label2.TabIndex = 4;
+            label2.Text = "Search:";
             // 
-            // comboBox1
+            // cbConnectors
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            "MangaFox"});
-            this.comboBox1.Location = new System.Drawing.Point(477, 38);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 21);
-            this.comboBox1.TabIndex = 6;
+            this.cbConnectors.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbConnectors.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbConnectors.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cbConnectors.FormattingEnabled = true;
+            this.cbConnectors.Location = new System.Drawing.Point(403, 38);
+            this.cbConnectors.Name = "cbConnectors";
+            this.cbConnectors.Size = new System.Drawing.Size(121, 21);
+            this.cbConnectors.TabIndex = 6;
+            this.cbConnectors.SelectedIndexChanged += new System.EventHandler(this.cbConnectors_SelectedIndexChanged);
             // 
-            // comboBox2
+            // cbSearch
             // 
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(102, 38);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(369, 21);
-            this.comboBox2.TabIndex = 7;
+            this.cbSearch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbSearch.FormattingEnabled = true;
+            this.cbSearch.Location = new System.Drawing.Point(63, 38);
+            this.cbSearch.Name = "cbSearch";
+            this.cbSearch.Size = new System.Drawing.Size(237, 21);
+            this.cbSearch.TabIndex = 7;
+            this.cbSearch.TextChanged += new System.EventHandler(this.cbSearch_TextChanged);
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(15, 66);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(62, 13);
-            this.label3.TabIndex = 8;
-            this.label3.Text = "Manga List:";
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(15, 66);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(62, 13);
+            label3.TabIndex = 8;
+            label3.Text = "Manga List:";
             // 
             // mangaList
             // 
+            this.mangaList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.mangaList.FormattingEnabled = true;
-            this.mangaList.Location = new System.Drawing.Point(18, 83);
+            this.mangaList.Location = new System.Drawing.Point(16, 82);
             this.mangaList.Name = "mangaList";
-            this.mangaList.Size = new System.Drawing.Size(284, 147);
+            this.mangaList.Size = new System.Drawing.Size(284, 186);
             this.mangaList.TabIndex = 9;
-            // 
-            // chapterList
-            // 
-            this.chapterList.FormattingEnabled = true;
-            this.chapterList.Location = new System.Drawing.Point(308, 83);
-            this.chapterList.Name = "chapterList";
-            this.chapterList.Size = new System.Drawing.Size(290, 154);
-            this.chapterList.TabIndex = 10;
+            this.mangaList.SelectedIndexChanged += new System.EventHandler(this.mangaList_SelectedIndexChangedAsync);
             // 
             // chapterSelectAll
             // 
@@ -142,85 +150,145 @@
             this.chapterSelectAll.UseVisualStyleBackColor = true;
             this.chapterSelectAll.CheckedChanged += new System.EventHandler(this.chapterSelectAll_CheckedChanged);
             // 
-            // toolStrip1
+            // dlButton
             // 
-            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.downloadProgressBar,
-            this.toolStripSeparator1,
-            this.downloadProgressLabel,
-            this.toolStripSeparator2,
-            this.chapterLabel,
-            this.toolStripSeparator3,
-            this.mangaLabel});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 716);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.toolStrip1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.toolStrip1.Size = new System.Drawing.Size(610, 25);
-            this.toolStrip1.TabIndex = 12;
-            this.toolStrip1.Text = "toolStrip1";
+            this.dlButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dlButton.Location = new System.Drawing.Point(16, 484);
+            this.dlButton.Name = "dlButton";
+            this.dlButton.Size = new System.Drawing.Size(571, 23);
+            this.dlButton.TabIndex = 12;
+            this.dlButton.Text = "Download";
+            this.dlButton.UseVisualStyleBackColor = true;
             // 
-            // downloadProgressBar
+            // btnBookmark
             // 
-            this.downloadProgressBar.Name = "downloadProgressBar";
-            this.downloadProgressBar.Size = new System.Drawing.Size(100, 22);
+            this.btnBookmark.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBookmark.Location = new System.Drawing.Point(306, 34);
+            this.btnBookmark.Name = "btnBookmark";
+            this.btnBookmark.Size = new System.Drawing.Size(26, 26);
+            this.btnBookmark.TabIndex = 13;
+            this.btnBookmark.Text = "+";
+            this.btnBookmark.UseVisualStyleBackColor = true;
+            this.btnBookmark.Click += new System.EventHandler(this.btnBookmark_ClickAsync);
             // 
-            // toolStripSeparator1
+            // label4
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(338, 41);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(59, 13);
+            this.label4.TabIndex = 14;
+            this.label4.Text = "Connector:";
             // 
-            // downloadProgressLabel
+            // ssLoadProgress
             // 
-            this.downloadProgressLabel.Name = "downloadProgressLabel";
-            this.downloadProgressLabel.Size = new System.Drawing.Size(52, 22);
-            this.downloadProgressLabel.Text = "Progress";
+            this.ssLoadProgress.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.lblLoadProgress,
+            this.pbLoadPorgress});
+            this.ssLoadProgress.Location = new System.Drawing.Point(0, 289);
+            this.ssLoadProgress.Name = "ssLoadProgress";
+            this.ssLoadProgress.Size = new System.Drawing.Size(610, 22);
+            this.ssLoadProgress.TabIndex = 15;
+            this.ssLoadProgress.Text = "statusStrip1";
+            this.ssLoadProgress.Visible = false;
             // 
-            // toolStripSeparator2
+            // lblLoadProgress
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            this.lblLoadProgress.Name = "lblLoadProgress";
+            this.lblLoadProgress.Size = new System.Drawing.Size(56, 17);
+            this.lblLoadProgress.Text = "<action>";
             // 
-            // chapterLabel
+            // pbLoadPorgress
             // 
-            this.chapterLabel.Name = "chapterLabel";
-            this.chapterLabel.Size = new System.Drawing.Size(49, 22);
-            this.chapterLabel.Text = "Chapter";
+            this.pbLoadPorgress.Name = "pbLoadPorgress";
+            this.pbLoadPorgress.Size = new System.Drawing.Size(100, 16);
             // 
-            // toolStripSeparator3
+            // updateAllBtn
             // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            this.updateAllBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.updateAllBtn.Location = new System.Drawing.Point(530, 36);
+            this.updateAllBtn.Name = "updateAllBtn";
+            this.updateAllBtn.Size = new System.Drawing.Size(68, 23);
+            this.updateAllBtn.TabIndex = 16;
+            this.updateAllBtn.Text = "Update All";
+            this.updateAllBtn.UseVisualStyleBackColor = true;
             // 
-            // mangaLabel
+            // chList
             // 
-            this.mangaLabel.Name = "mangaLabel";
-            this.mangaLabel.Size = new System.Drawing.Size(44, 22);
-            this.mangaLabel.Text = "Manga";
+            this.chList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.chList.CheckBoxes = true;
+            this.chList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            chNameHeader});
+            this.chList.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.chList.LabelWrap = false;
+            this.chList.Location = new System.Drawing.Point(306, 82);
+            this.chList.Name = "chList";
+            this.chList.ShowGroups = false;
+            this.chList.Size = new System.Drawing.Size(281, 186);
+            this.chList.TabIndex = 18;
+            this.chList.TabStop = false;
+            this.chList.UseCompatibleStateImageBehavior = false;
+            this.chList.View = System.Windows.Forms.View.List;
+            // 
+            // chNameHeader
+            // 
+            chNameHeader.Text = "Chapter";
+            // 
+            // dgvJobs
+            // 
+            this.dgvJobs.AllowUserToAddRows = false;
+            this.dgvJobs.AllowUserToDeleteRows = false;
+            this.dgvJobs.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvJobs.BackgroundColor = System.Drawing.SystemColors.Window;
+            this.dgvJobs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvJobs.Location = new System.Drawing.Point(18, 302);
+            this.dgvJobs.Name = "dgvJobs";
+            this.dgvJobs.ReadOnly = true;
+            this.dgvJobs.Size = new System.Drawing.Size(569, 176);
+            this.dgvJobs.TabIndex = 19;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new System.Drawing.Point(15, 286);
+            label5.Name = "label5";
+            label5.Size = new System.Drawing.Size(80, 13);
+            label5.TabIndex = 20;
+            label5.Text = "Download jobs:";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(610, 741);
-            this.Controls.Add(this.toolStrip1);
+            this.ClientSize = new System.Drawing.Size(610, 519);
+            this.Controls.Add(label5);
+            this.Controls.Add(this.dgvJobs);
+            this.Controls.Add(this.chList);
+            this.Controls.Add(this.updateAllBtn);
+            this.Controls.Add(this.ssLoadProgress);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.btnBookmark);
+            this.Controls.Add(this.dlButton);
             this.Controls.Add(this.chapterSelectAll);
-            this.Controls.Add(this.chapterList);
             this.Controls.Add(this.mangaList);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.comboBox2);
-            this.Controls.Add(this.comboBox1);
-            this.Controls.Add(this.label2);
+            this.Controls.Add(label3);
+            this.Controls.Add(this.cbSearch);
+            this.Controls.Add(this.cbConnectors);
+            this.Controls.Add(label2);
             this.Controls.Add(this.dlPathButton);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(label1);
             this.Controls.Add(this.dlPathTextbox);
             this.Name = "MainForm";
-            this.Text = "MainForm";
-            this.Load += new System.EventHandler(this.MainForm_Load);
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
+            this.ShowIcon = false;
+            this.Text = "Kemori";
+            this.Load += new System.EventHandler(this.MainForm_LoadAsync);
+            this.ssLoadProgress.ResumeLayout(false);
+            this.ssLoadProgress.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvJobs)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -229,22 +297,19 @@
         #endregion
 
         private System.Windows.Forms.TextBox dlPathTextbox;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button dlPathButton;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ComboBox cbConnectors;
+        private System.Windows.Forms.ComboBox cbSearch;
         private System.Windows.Forms.ListBox mangaList;
-        private System.Windows.Forms.CheckedListBox chapterList;
         private System.Windows.Forms.CheckBox chapterSelectAll;
-        private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripProgressBar downloadProgressBar;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripLabel downloadProgressLabel;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripLabel chapterLabel;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripLabel mangaLabel;
+        private System.Windows.Forms.Button dlButton;
+        private System.Windows.Forms.Button btnBookmark;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.StatusStrip ssLoadProgress;
+        private System.Windows.Forms.ToolStripStatusLabel lblLoadProgress;
+        private System.Windows.Forms.ToolStripProgressBar pbLoadPorgress;
+        private System.Windows.Forms.Button updateAllBtn;
+        private System.Windows.Forms.ListView chList;
+        private System.Windows.Forms.DataGridView dgvJobs;
     }
 }

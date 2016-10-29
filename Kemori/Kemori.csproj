@@ -80,11 +80,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Base\Favorite.cs" />
+    <Compile Include="Base\Bookmark.cs" />
     <Compile Include="Base\Manga.cs" />
     <Compile Include="Base\MangaChapter.cs" />
     <Compile Include="Base\MangaConnector.cs" />
+    <Compile Include="UI\DataGridViewProgressCell.cs" />
+    <Compile Include="UI\DataGridViewProgressColumn.cs" />
     <Compile Include="Utils\Is.cs" />
+    <Compile Include="Utils\Number.cs" />
+    <Compile Include="Utils\PathUtils.cs" />
     <Compile Include="Web\CloudFlare_Evader.cs" />
     <Compile Include="Classes\Fetch.cs" />
     <Compile Include="UI\FolderSelectDialog.cs" />

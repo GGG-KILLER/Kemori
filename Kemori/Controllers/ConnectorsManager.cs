@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Kemori.Base;
+using Kemori.Extensions;
 using Kemori.Utils;
 
 namespace Kemori.Controllers
@@ -18,27 +19,23 @@ namespace Kemori.Controllers
         /// <returns></returns>
         public static IList<MangaConnector> GetAll ( )
         {
-            var di = new DirectoryInfo ( "." );
+            var di = new DirectoryInfo ( "Connectors" );
             if ( !di.Exists )
             {
                 di.Create ( );
                 throw new Exception ( "No connectors in the \"Connectors\" folder" );
             }
 
+            Console.WriteLine ( "BGF:" + String.Join ( ",", di.GetFiles ( "*.dll" ).Select ( d => d.FullName ) ) );
+
             var assemblies = di.GetFiles ( "*.dll", SearchOption.TopDirectoryOnly )
-// Debug builds check for .dlls in the same directory too
-#if DEBUG
-                .Concat (
-                    new FileInfo (
-                        Assembly.GetExecutingAssembly ( ).FullName
-                    )
-                        .Directory
-                        .GetFiles ( "*.dll" )
-                )
-#endif
-                .Where ( fi => fi.FullName.Split ( '.' )[0] == "Kemori" )
+                .Where ( fi =>
+                {
+                    return fi.FullName.AfterLast ( Path.DirectorySeparatorChar ).Before ( '.' ) == "Kemori";
+                } )
                 .Select ( fi =>
                 {
+                    Console.WriteLine ( "FN:" + fi.FullName );
                     try
                     {
                         return Assembly.LoadFile ( fi.FullName );
@@ -76,7 +73,7 @@ namespace Kemori.Controllers
         /// "Connectors" folder asynchronously
         /// </summary>
         /// <returns></returns>
-        public static async Task<IList<MangaConnector>> GetAllAsync()
+        public static async Task<IList<MangaConnector>> GetAllAsync ( )
         {
             return await Task.Run ( ( ) => GetAll ( ) );
         }

@@ -137,7 +137,7 @@ namespace Kemori.Classes
 
         public void Dispose ( )
         {
-            _wc.Dispose ( );
+            _wc?.Dispose ( );
             GC.SuppressFinalize ( this );
         }
 

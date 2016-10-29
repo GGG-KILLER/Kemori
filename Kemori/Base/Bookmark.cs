@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Kemori.Base
 {
     [Serializable]
-    class Favorite
+    class Bookmark
     {
         public String ConnectorWebsite;
-        public String MangaInstanceID;
+        public String MangaName;
     }
 }

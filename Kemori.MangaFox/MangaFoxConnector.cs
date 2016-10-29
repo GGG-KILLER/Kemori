@@ -118,7 +118,7 @@ namespace Kemori.MangaFox
                 var volumeIndexCurrent = 0;
                 var volumeIndexNext = 0;
 
-                String volumePrefix, chNumber, chTitle, chLink;
+                String volumePrefix = String.Empty, chNumber, chTitle, chLink;
 
                 if ( indexStart > 9 && indexEnd >= -1 )
                 {
@@ -175,6 +175,7 @@ namespace Kemori.MangaFox
 
                         chapterList.Add ( new MangaChapter
                         {
+                            Volume = volumePrefix,
                             Manga = Manga,
                             Chapter = chNumber,
                             Link = chLink,
@@ -217,7 +218,7 @@ namespace Kemori.MangaFox
                         indexEnd = HTML.IndexOf ( '"', indexStart );
 
                         pageLinks.Add (
-                            await GetImageLink (
+                            await GetImageLinkAsync (
                                 HTML.Substring ( indexStart, indexEnd - indexStart )
                             )
                         );
@@ -234,7 +235,7 @@ namespace Kemori.MangaFox
         }
 
         // Shamefully copied from hakuneko
-        public async Task<String> GetImageLink ( String pageLink )
+        public async Task<String> GetImageLinkAsync ( String pageLink )
         {
 
             try

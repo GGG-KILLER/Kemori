@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Ionic.Zip;
 using Kemori.Classes;
@@ -21,6 +22,7 @@ namespace Kemori.Base
         {
             InitHTTP ( );
             InitIO ( );
+            MangaList = new Manga[0];
         }
 
         /// <summary>
@@ -71,6 +73,7 @@ namespace Kemori.Base
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+
         /// <summary>
         /// Gets all page images links for a given chapter
         /// </summary>
@@ -130,7 +133,7 @@ namespace Kemori.Base
         {
             /*
              * From hakuneko:
-             * 
+             *
              * Plain chapter variations:
              * %c = "13-18"
              * %c = "13"
@@ -139,7 +142,7 @@ namespace Kemori.Base
              * %c = "13v.2"
              * %c = "13.5v2"
              * %c = "13.5v.2"
-             * 
+             *
              * Variations combined with text:
              * %ct = "Text Text"
              * %ct = "%c Text Text"
@@ -206,10 +209,10 @@ namespace Kemori.Base
 
         public class ChapterFileProcessor : IDisposable
         {
-            String root;
-            Boolean Compressed;
-            MangaChapter Chapter;
-            ZipFile ZipFile;
+            private readonly String root;
+            private readonly Boolean Compressed;
+            private readonly MangaChapter Chapter;
+            private readonly ZipFile ZipFile;
 
             /// <summary>
             /// Initializes a chapter processor
@@ -264,6 +267,65 @@ namespace Kemori.Base
         public static ChapterFileProcessor GetFileProcessor ( MangaChapter Chapter )
         {
             return new ChapterFileProcessor ( Chapter );
+        }
+
+        public FileInfo GetMangaListInfo ( )
+        {
+            var fi = new FileInfo (
+                Path.Combine (
+                    Environment.GetFolderPath ( Environment.SpecialFolder.ApplicationData ),
+                    "lists",
+                    ID + ".list"
+                )
+            );
+            fi.Directory.Create ( );
+
+            return fi;
+        }
+
+        /// <summary>
+        /// Loads the manga list from the local cache
+        /// </summary>
+        public async void LoadMangaListFromCacheAsync ( )
+        {
+            var fi = GetMangaListInfo ( );
+
+            try
+            {
+                if ( fi.Exists && fi.Length > 0 )
+                    this.MangaList = await SerializerUtils
+                        .DeserializeFromFileAsync<Manga[]> ( fi.FullName );
+            }
+            catch ( Exception )
+            {
+                // For some reason the config didn't load
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Updates the local cache of the manga list
+        /// </summary>
+        public async void UpdateMangaListCacheAsync ( )
+        {
+            var list = ( await UpdateMangaListAsync ( ) )
+                .ToArray ( );
+
+            this.MangaList = list;
+
+            await SerializerUtils.SerializeToFileAsync (
+                list,
+                GetMangaListInfo ( ).FullName
+            );
+        }
+
+        /// <summary>
+        /// Returns the <see cref="MangaConnector"/> <see cref="String"/> representation
+        /// </summary>
+        /// <returns></returns>
+        public override String ToString ( )
+        {
+            return Website;
         }
     }
 }

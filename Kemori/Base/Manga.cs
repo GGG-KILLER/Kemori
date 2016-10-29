@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Kemori.Interfaces;
 
 namespace Kemori.Base
@@ -72,7 +73,7 @@ namespace Kemori.Base
         /// <summary>
         /// Loads the information for this manga(chapters)
         /// </summary>
-        public async void Load ( )
+        public async Task Load ( )
         {
             this.Chapters = ( await Connector.GetChaptersAsync ( this ) ).ToArray ( );
         }
@@ -85,6 +86,15 @@ namespace Kemori.Base
             _hash = $"{Connector.ID}{Connector.Website}{this.Name}{this.Link}"
                     .GetHashCode ( )
                     .ToString ( );
+        }
+
+        /// <summary>
+        /// Returns the <see cref="Manga"/> <see cref="String"/> representation
+        /// </summary>
+        /// <returns></returns>
+        public override String ToString ( )
+        {
+            return Name;
         }
     }
 }

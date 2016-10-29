@@ -11,6 +11,19 @@ namespace Kemori.Base
         /// </summary>
         public String Chapter { get; set; }
 
+        /// <summary>
+        /// Wether this <see cref="MangaChapter"/> was already downloaded
+        /// (does not check if it was actually sucessfuly downloaded)
+        /// </summary>
+        public Boolean IsDownloaded
+        {
+            get
+            {
+                var dirName = Manga?.Connector?.IO?.PathForChapter ( this );
+                return dirName != null && ( System.IO.File.Exists ( dirName + ".cbz" ) || System.IO.Directory.Exists ( dirName ) );
+            }
+        }
+
         private String _hash;
 
         /// <summary>
@@ -55,6 +68,11 @@ namespace Kemori.Base
         public Int32 Pages { get; private set; }
 
         /// <summary>
+        /// Volume of the manga
+        /// </summary>
+        public String Volume { get; set; }
+
+        /// <summary>
         /// Loads number of pages and page links
         /// </summary>
         public async void Load ( )
@@ -71,6 +89,15 @@ namespace Kemori.Base
             _hash = $"{Manga.InstanceID}{this.Name}{this.Link}"
                 .GetHashCode ( )
                 .ToString ( );
+        }
+
+        /// <summary>
+        /// Returns the <see cref="MangaChapter"/> <see cref="String"/> representation
+        /// </summary>
+        /// <returns></returns>
+        public override String ToString ( )
+        {
+            return $"[{Volume}] - {Chapter} - {Name}";
         }
     }
 }

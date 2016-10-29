@@ -41,7 +41,7 @@ namespace Kemori.Interfaces
         /// <summary>
         /// Loads the information about the manga
         /// </summary>
-        void Load ( );
+        System.Threading.Tasks.Task Load ( );
 
         /// <summary>
         /// Recalculates the hash for this manga

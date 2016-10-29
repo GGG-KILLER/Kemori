@@ -42,7 +42,7 @@ namespace Kemori.Resources
         /// <summary>
         /// User's bookmarked mangas
         /// </summary>
-        public static List<Favorite> Bookmarks
+        public static List<Bookmark> Bookmarks
         {
             get
             {
@@ -109,7 +109,7 @@ namespace Kemori.Resources
     internal class Configs
     {
         internal String SavePath;
-        internal List<Favorite> Bookmarks;
+        internal List<Bookmark> Bookmarks = new List<Bookmark> ( );
         internal Boolean CompressChapters;
     }
 }

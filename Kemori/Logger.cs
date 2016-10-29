@@ -13,10 +13,6 @@ namespace Kemori
         public Logger ( )
         {
             LogFile = new FileInfo ( PathUtils.GetPathForFile ( "kemori.log" ) );
-            LogFile.Directory.Create ( );
-
-            File.WriteAllText ( "a.txt", LogFile.FullName );
-            System.Diagnostics.Process.Start ( "a.txt" );
         }
 
         public async Task InitAsync ( )

@@ -7,11 +7,13 @@ namespace Kemori.Utils
     {
         public static String GetPathForFile ( String File )
         {
-            return Path.Combine (
+            var di = new FileInfo ( Path.Combine (
                 Environment.GetFolderPath ( Environment.SpecialFolder.CommonApplicationData ),
                 nameof ( Kemori ),
                 File
-            );
+            ) );
+            di.Directory.Create ( );
+            return di.FullName;
         }
     }
 }

@@ -271,15 +271,10 @@ namespace Kemori.Base
 
         public FileInfo GetMangaListInfo ( )
         {
-            var fi = new FileInfo (
-                Path.Combine (
-                    Environment.GetFolderPath ( Environment.SpecialFolder.ApplicationData ),
-                    "lists",
-                    ID + ".list"
-                )
-            );
+            var fi = new FileInfo ( PathUtils.GetPathForFile ( $"lists/{ID}.list" ) );
             fi.Directory.Create ( );
-
+            if ( !fi.Exists )
+                fi.Create ( );
             return fi;
         }
 

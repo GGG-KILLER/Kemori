@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Kemori.Utils;
 
 namespace Kemori
 {
@@ -11,12 +12,11 @@ namespace Kemori
 
         public Logger ( )
         {
-            LogFile = new FileInfo (
-                Path.Combine (
-                    Environment.GetFolderPath ( Environment.SpecialFolder.ApplicationData ),
-                    "kemori.log"
-                )
-            );
+            LogFile = new FileInfo ( PathUtils.GetPathForFile ( "kemori.log" ) );
+            LogFile.Directory.Create ( );
+
+            File.WriteAllText ( "a.txt", LogFile.FullName );
+            System.Diagnostics.Process.Start ( "a.txt" );
         }
 
         public async Task InitAsync ( )

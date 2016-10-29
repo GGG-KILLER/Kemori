@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Kemori.Base;
 using Kemori.Extensions;
 using Kemori.Interfaces;
 
-namespace Kemori.MangaFox
+namespace Kemori.Connectors.MangaFox
 {
     public class MangaFoxConnector : MangaConnector
     {
@@ -77,7 +76,6 @@ namespace Kemori.MangaFox
                     {
                         indexEnd = HTML.IndexOf ( '"', indexStart );
                         var mangaLink = HTML.Substring ( indexStart, indexEnd - indexStart );
-
 
                         indexStart = HTML.IndexOfAfter ( '>', indexEnd );
                         indexEnd = HTML.IndexOf ( '<', indexStart );
@@ -172,7 +170,6 @@ namespace Kemori.MangaFox
                         // Personally don't like the "new" Hakuneko leaves in the chapter titles which causes to re-download when MangaFox decides that the chapter is now "old"
                         chTitle = chTitle == "new" ? String.Empty : chTitle;
 
-
                         chapterList.Add ( new MangaChapter
                         {
                             Volume = volumePrefix,
@@ -192,7 +189,6 @@ namespace Kemori.MangaFox
 
             return chapterList;
         }
-
 
         // Shamefully copied from hakuneko (barely modified)
         public async override Task<String[]> GetPageLinksAsync ( MangaChapter Chapter )
@@ -237,7 +233,6 @@ namespace Kemori.MangaFox
         // Shamefully copied from hakuneko
         public async Task<String> GetImageLinkAsync ( String pageLink )
         {
-
             try
             {
                 var HTML = await HTTP.GetStringAsync ( pageLink );

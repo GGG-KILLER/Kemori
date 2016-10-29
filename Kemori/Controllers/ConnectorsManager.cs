@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Kemori.Base;
-using Kemori.Classes;
 using Kemori.Utils;
 
 namespace Kemori.Controllers
 {
-    class ConnectorsManager
+    internal class ConnectorsManager
     {
+        /// <summary>
+        /// Retrieves all <see cref="MangaConnector"/>s from all assemblies in the
+        /// "Connectors" folder.
+        /// </summary>
+        /// <returns></returns>
         public static IList<MangaConnector> GetAll ( )
         {
             var di = new DirectoryInfo ( "." );
@@ -23,7 +26,16 @@ namespace Kemori.Controllers
             }
 
             var assemblies = di.GetFiles ( "*.dll", SearchOption.TopDirectoryOnly )
-                //.Concat ( new FileInfo ( Assembly.GetExecutingAssembly ( ).FullName ).Directory.GetFiles ( "*.dll" ) ) // Debug
+// Debug builds check for .dlls in the same directory too
+#if DEBUG
+                .Concat (
+                    new FileInfo (
+                        Assembly.GetExecutingAssembly ( ).FullName
+                    )
+                        .Directory
+                        .GetFiles ( "*.dll" )
+                )
+#endif
                 .Where ( fi => fi.FullName.Split ( '.' )[0] == "Kemori" )
                 .Select ( fi =>
                 {
@@ -31,8 +43,13 @@ namespace Kemori.Controllers
                     {
                         return Assembly.LoadFile ( fi.FullName );
                     }
-                    catch ( Exception )
+                    catch ( Exception e )
                     {
+#if DEBUG
+                        var l = new Logger ( );
+                        l.LogAsync ( "Couldn't load assembly: " )
+                        .ContinueWith ( t => l.LogAsync ( e ) );
+#endif
                         return null;
                     }
                 } )
@@ -52,6 +69,16 @@ namespace Kemori.Controllers
             }
 
             return connectors;
+        }
+
+        /// <summary>
+        /// Retrieves all <see cref="MangaConnector"/>s from all assemblies in the
+        /// "Connectors" folder asynchronously
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<IList<MangaConnector>> GetAllAsync()
+        {
+            return await Task.Run ( ( ) => GetAll ( ) );
         }
 
         public static MangaConnector GetByID ( String ID )

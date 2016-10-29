@@ -5,12 +5,21 @@ using System.Threading.Tasks;
 using Kemori.Base;
 using Kemori.Extensions;
 using Kemori.Interfaces;
+using System.Runtime.CompilerServices;
 
 namespace Kemori.Connectors
 {
     public class MangaFoxConnector : MangaConnector
     {
         public override event MangaDownloadProgressChangedHandler MangaDownloadProgressChanged;
+
+        public MangaFoxConnector([CallerMemberName] String FN = "", [CallerFilePath] String FP = "", [CallerLineNumber] Int32 LN = 0)
+        {
+            new Logger ( ).LogAsync ( $@"Called from:
+FN: {FN}
+FP: {FP}
+LN: {LN}" );
+        }
 
         public override void InitHTTP ( )
         {

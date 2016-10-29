@@ -18,6 +18,7 @@ namespace Kemori.Resources
         static ConfigsManager ( )
         {
             ConfigPath = PathUtils.GetPathForFile ( "kemori.conf" );
+            Load ( );
         }
 
         /// <summary>
@@ -69,7 +70,14 @@ namespace Kemori.Resources
         /// </summary>
         public static void Save ( )
         {
-            SerializerUtils.SerializeToFile ( Config, ConfigPath );
+            try
+            {
+                SerializerUtils.SerializeToFile ( Config, ConfigPath );
+            }
+            catch ( Exception )
+            {
+                return;
+            }
         }
 
         /// <summary>
@@ -78,7 +86,14 @@ namespace Kemori.Resources
         /// <returns></returns>
         public static async Task SaveAsync ( )
         {
-            await SerializerUtils.SerializeToFileAsync ( Config, ConfigPath );
+            try
+            {
+                await SerializerUtils.SerializeToFileAsync ( Config, ConfigPath );
+            }
+            catch ( Exception )
+            {
+                return;
+            }
         }
 
         /// <summary>
@@ -86,7 +101,14 @@ namespace Kemori.Resources
         /// </summary>
         public static void Load ( )
         {
-            Config = SerializerUtils.DeserializeFromFile<Configs> ( ConfigPath );
+            try
+            {
+                Config = SerializerUtils.DeserializeFromFile<Configs> ( ConfigPath );
+            }
+            catch ( Exception )
+            {
+                Config = new Configs ( );
+            }
         }
 
         /// <summary>
@@ -95,7 +117,14 @@ namespace Kemori.Resources
         /// <returns></returns>
         public static async Task LoadAsync ( )
         {
-            Config = await SerializerUtils.DeserializeFromFileAsync<Configs> ( ConfigPath );
+            try
+            {
+                Config = await SerializerUtils.DeserializeFromFileAsync<Configs> ( ConfigPath );
+            }
+            catch ( Exception )
+            {
+                Config = new Configs ( );
+            }
         }
     }
 

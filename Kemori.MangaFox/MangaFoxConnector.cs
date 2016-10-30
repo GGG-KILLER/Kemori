@@ -1,11 +1,29 @@
-﻿using System;
+﻿/*
+ * Kemori - An open and community friendly manga downloader
+ * Copyright (C) 2016  GGG KILLER
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Kemori.Base;
 using Kemori.Extensions;
 using Kemori.Interfaces;
-using System.Runtime.CompilerServices;
 
 namespace Kemori.Connectors
 {
@@ -13,12 +31,14 @@ namespace Kemori.Connectors
     {
         public override event MangaDownloadProgressChangedHandler MangaDownloadProgressChanged;
 
-        public MangaFoxConnector([CallerMemberName] String FN = "", [CallerFilePath] String FP = "", [CallerLineNumber] Int32 LN = 0)
+        public MangaFoxConnector ( [CallerMemberName] String FN = "", [CallerFilePath] String FP = "", [CallerLineNumber] Int32 LN = 0 )
         {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             new Logger ( ).LogAsync ( $@"Called from:
 FN: {FN}
 FP: {FP}
 LN: {LN}" );
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         public override void InitHTTP ( )

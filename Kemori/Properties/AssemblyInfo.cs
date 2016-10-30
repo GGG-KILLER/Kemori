@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration ( "" )]
 [assembly: AssemblyCompany ( "" )]
 [assembly: AssemblyProduct ( "Kemori" )]
-[assembly: AssemblyCopyright ( "Copyright ©  2016" )]
+[assembly: AssemblyCopyright ( "Copyright © 2016 GGG KILLER" )]
 [assembly: AssemblyTrademark ( "" )]
 [assembly: AssemblyCulture ( "" )]
 

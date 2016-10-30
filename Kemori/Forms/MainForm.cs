@@ -1,8 +1,25 @@
-﻿using System;
+﻿/*
+ * Kemori - An open and community friendly manga downloader
+ * Copyright (C) 2016  GGG KILLER
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -34,22 +51,26 @@ namespace Kemori.Forms
         /// <summary>
         /// Curently selected <see cref="Manga"/>
         /// </summary>
-        Int32 CurrentManga;
+        private Int32 CurrentManga;
 
         /// <summary>
         /// Currently <see cref="MangaChapter"/> list being displayed to the user
         /// </summary>
-        MangaChapter[] MangaChapterCollection;
+        private MangaChapter[] MangaChapterCollection;
 
         /// <summary>
         /// Wether the search is a bookmark created by the user
         /// </summary>
-        Boolean SearchIsBookmark;
+        private Boolean SearchIsBookmark;
 
         public MainForm ( )
         {
             InitializeComponent ( );
+            // This is perfectly okay since we won't use anything after it or need to
+            // be sure of completion.
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             new Logger ( ).InitAsync ( );
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         #region Event listeners
@@ -253,7 +274,8 @@ namespace Kemori.Forms
             ConfigsManager.SavePath = fsd.FileName;
         }
 
-        void Msg ( Object o ) { MessageBox.Show ( this, "MSG: " + o ); }
+        private void Msg ( Object o )
+        { MessageBox.Show ( this, "MSG: " + o ); }
 
         /// <summary>
         /// Loads all connectors into the UI and Form
@@ -280,6 +302,7 @@ namespace Kemori.Forms
 
             Msg ( cbConnectors.Items.Count );
         }
+
         /// <summary>
         /// Returns a <see cref="MangaConnector"/> associated to a <see cref="Bookmark"/>
         /// </summary>
@@ -385,7 +408,7 @@ namespace Kemori.Forms
             chList.Items.Clear ( );
 
             var manga = MangaCollection[CurrentManga];
-            await manga.Load ( );
+            await manga.LoadAsync ( );
 
             MangaChapterCollection = manga.Chapters;
             Array.Sort ( MangaChapterCollection, new CCompDesc ( ) );
@@ -400,7 +423,7 @@ namespace Kemori.Forms
         /// <summary>
         /// Manages the updating of the bookmark button text
         /// </summary>
-        void UpdateBookmarkButton ( )
+        private void UpdateBookmarkButton ( )
         {
             btnBookmark.Text = SearchIsBookmark ? "-" : "+";
         }
@@ -409,7 +432,7 @@ namespace Kemori.Forms
         /// Sets the "Enabled" state of all controls in the form
         /// </summary>
         /// <param name="state"></param>
-        void SetUIEnabledState ( Boolean state )
+        private void SetUIEnabledState ( Boolean state )
         {
             cbSearch.Enabled = btnBookmark.Enabled =
                 cbConnectors.Enabled = updateAllBtn.Enabled =

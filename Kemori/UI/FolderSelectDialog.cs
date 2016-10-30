@@ -1,5 +1,5 @@
 /*
- * Kemori - An open and community friendly manga downloader
+ * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
  * This program is free software: you can redistribute it and/or modify

@@ -21,7 +21,7 @@ using System.IO;
 
 namespace Kemori.Utils
 {
-    internal class PathUtils
+    public class PathUtils
     {
         public static String GetPathForFile ( String File )
         {

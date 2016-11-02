@@ -62,20 +62,53 @@ namespace Kemori.Base
         /// </summary>
         public IO IO;
 
+        String _id;
         /// <summary>
-        /// The UNIQUE ID of this connector
+        /// The UNIQUE ID of this connector (can only be set once)
         /// </summary>
-        public String ID { get; private set; }
+        /// 
+        public String ID
+        {
+            get
+            {
+                return _id;
+            }
+            set
+            {
+                if ( _id == null )
+                    _id = value;
+                else
+                    throw new Exception ( "ID is a readonly property." );
+            }
+        }
 
         /// <summary>
         /// The list of mangas available for this provider
         /// </summary>
-        public Manga[] MangaList { get; private set; }
+        public Manga[] MangaList
+        {
+            get; private set;
+        }
 
+
+        String _website;
         /// <summary>
         /// The website (MangaFox, MangaHere, etc.) this downloader is associated to
         /// </summary>
-        public String Website { get; private set; }
+        public String Website
+        {
+            get
+            {
+                return _website;
+            }
+            set
+            {
+                if ( _website == null )
+                    _website = value;
+                else
+                    throw new Exception ( "Website is a readonly property." );
+            }
+        }
 
         /// <summary>
         /// Called when the download makes progress

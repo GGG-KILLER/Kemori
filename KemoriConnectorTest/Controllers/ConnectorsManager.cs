@@ -21,30 +21,44 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Kemori.Base;
+using Kemori.Utils;
 
-namespace Kemori.Controllers
+namespace Kemori.ConnectorTest.Controllers
 {
     /// <summary>
     /// Class that manages the loading and searching of <see cref="MangaConnector"/>s
     /// </summary>
-    internal class ConnectorsManager
+    internal class ConnectorsManager : IDisposable
     {
+        AppDomain SafeDomain;
+
+        public ConnectorsManager ( )
+        {
+            var setup = new AppDomainSetup
+            {
+                ApplicationBase = AppDomain.CurrentDomain.SetupInformation.ApplicationBase + @"Connectors\",
+                ApplicationName = nameof ( Kemori ),
+                CachePath = PathUtils.GetPathForFile(@"Cache\"),
+                DisallowPublisherPolicy = true,
+                DynamicBase = PathUtils.GetPathForFile ( @"DynamicBase\" ),
+            };
+            SafeDomain = AppDomain.CreateDomain ( "KemoriMangaConnectors", null, setup );
+        }
+
         /// <summary>
         /// The type of the <see cref="MangaConnector"/> class
         /// </summary>
-        private static Type MangaConnectorType = typeof ( MangaConnector );
+        private Type MangaConnectorType = typeof ( MangaConnector );
 
         /// <summary>
         /// Retrieves all <see cref="MangaConnector"/>s from all assemblies in the
         /// "Connectors" folder asynchronously
         /// </summary>
         /// <returns></returns>
-        public async static Task<IList<MangaConnector>> GetAllAsync ( )
+        public IDictionary<MangaConnector, IList<String>> ValidateAll ( )
         {
-            var list = new List<MangaConnector> ( );
-            var log = new Logger ( );
+            var list = new Dictionary<MangaConnector, IList<String>> ( );
 
             // Goes through each .dll found
             foreach ( var path in GetPaths ( ) )
@@ -55,44 +69,12 @@ namespace Kemori.Controllers
                 // Goes through each of the classes
                 foreach ( var connType in connTypes )
                 {
-                    // And only adds them to the list if they are valid
-                    try
-                    {
-                        ValidateConnector ( connType );
-                        list.Add ( ( MangaConnector ) Activator.CreateInstance ( connType ) );
-                    }
-                    catch ( Exception e )
-                    {
-                        // Logs validation errors
-                        await log.LogAsync ( $"Error loading connector {connType.FullName} at \"{path}\":" );
-                        await log.LogAsync ( e );
-                    }
+                    var conn = ( MangaConnector ) Activator.CreateInstance ( connType );
+                    list[conn] = ValidateConnector ( connType );
                 }
             }
 
             return list;
-        }
-
-        /// <summary>
-        /// Returns the connector that contains the provided ID
-        /// </summary>
-        /// <param name="ID"></param>
-        /// <returns></returns>
-        public async static Task<MangaConnector> GetByIDAsync ( String ID )
-        {
-            return ( await GetAllAsync ( ) )
-                .FirstOrDefault ( conn => conn.ID == ID );
-        }
-
-        /// <summary>
-        /// Returns the list of connectors that target the provided website
-        /// </summary>
-        /// <param name="Website">Website to search for</param>
-        /// <returns></returns>
-        public async static Task<IEnumerable<MangaConnector>> GetByWebsiteAsync ( String Website )
-        {
-            return ( await GetAllAsync ( ) )
-                .Where ( conn => conn.Website == Website );
         }
 
         #region Reflection
@@ -118,11 +100,11 @@ namespace Kemori.Controllers
         /// Gets all public classes that are of <see cref="MangaConnector"/> type
         /// and return their <see cref="Type"/>
         /// </summary>
-        /// <param name="AssemblyFile">Path of the assembly to load</param>
+        /// <param name="FileName">Path of the assembly to load</param>
         /// <returns></returns>
-        private static IList<Type> GetConnectorsTypes ( String AssemblyFile )
+        private IList<Type> GetConnectorsTypes ( String FileName )
         {
-            var assm = Assembly.LoadFrom ( AssemblyFile );
+            var assm = Assembly.LoadFile ( FileName );
             var types = assm.ExportedTypes;
             var conns = new List<Type> ( );
 
@@ -145,8 +127,10 @@ namespace Kemori.Controllers
         /// and throws an exception when one of them is missing
         /// </summary>
         /// <param name="connType">Connector's <see cref="Type"/></param>
-        private static void ValidateConnector ( Type connType )
+        private static IList<String> ValidateConnector ( Type connType )
         {
+            var errors = new List<String> ( );
+
             // Properties being checked
             var properties = new[]
             {
@@ -159,7 +143,7 @@ namespace Kemori.Controllers
             {
                 var propVal = GetPropertyValueOrDefault<String> ( connType, property );
                 if ( propVal == null )
-                    throw new Exception ( $"Connector is missing the \"{property}\" property or value is null." );
+                    errors.Add ( $"Connector is missing the \"{property}\" property or value is null." );
             }
 
             // Methods being checked
@@ -177,10 +161,10 @@ namespace Kemori.Controllers
             foreach ( var method in methods )
             {
                 if ( !MethodExists ( connType, method ) )
-                {
-                    throw new Exception ( $"Connector is missing the \"{method}\" method." );
-                }
+                    errors.Add ( $"Connector is missing the \"{method}\" method." );
             }
+
+            return errors;
         }
 
         /// <summary>
@@ -212,6 +196,23 @@ namespace Kemori.Controllers
         private static Boolean MethodExists ( Type type, String methodName )
         {
             return type.GetMethod ( methodName, BindingFlags.DeclaredOnly ) != null;
+        }
+
+        public void Dispose ( )
+        {
+            try
+            {
+                AppDomain.Unload ( SafeDomain );
+            }
+            catch ( Exception )
+            {
+                return;
+            }
+            finally
+            {
+                SafeDomain = null;
+                GC.SuppressFinalize ( this );
+            }
         }
 
         #endregion Reflection

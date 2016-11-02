@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Kemori.Base;
 using Kemori.Extensions;
@@ -31,19 +30,17 @@ namespace Kemori.Connectors
     {
         public override event MangaDownloadProgressChangedHandler MangaDownloadProgressChanged;
 
-        public MangaFoxConnector ( [CallerMemberName] String FN = "", [CallerFilePath] String FP = "", [CallerLineNumber] Int32 LN = 0 )
+        public MangaFoxConnector ( )
         {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            new Logger ( ).LogAsync ( $@"Called from:
-FN: {FN}
-FP: {FP}
-LN: {LN}" );
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            this.ID = "KemoriMangaFoxConnector";
+            this.Website = "MangaFox.me";
         }
 
+        /// <summary>
+        /// Initializes the <see cref="Classes.Fetch"/> of this Connector
+        /// </summary>
         public override void InitHTTP ( )
         {
-            Console.WriteLine ( "[MangaFoxConnector]InitHTTP Called" );
             HTTP = new Classes.Fetch ( "http://mangafox.me", "http://mangafox.me" );
         }
 
@@ -79,15 +76,26 @@ LN: {LN}" );
             HTTP.DownloadProgressChanged -= HTTP_DownloadProgressChanged;
         }
 
+        /// <summary>
+        /// Pipes the progresschanged event from the <see cref="Classes.Fetch"/>
+        /// event to ours
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void HTTP_DownloadProgressChanged ( Object sender, System.Net.DownloadProgressChangedEventArgs e )
         {
             this.MangaDownloadProgressChanged?.Invoke ( this, e );
         }
 
         // Shamefully copied from hakuneko
+        /// <summary>
+        /// Retrieves the latest manga list from MangaFox
+        /// </summary>
+        /// <returns></returns>
         public override async Task<IEnumerable<Manga>> UpdateMangaListAsync ( )
         {
             var mangaList = new List<Manga> ( );
+            await Logger.LogAsync ( "Starting to update the manga list of mangafox.me" );
             try
             {
                 var HTML = ( await HTTP.GetStringAsync ( "http://mangafox.me/manga/" ) );
@@ -129,10 +137,18 @@ LN: {LN}" );
                 await Logger.LogAsync ( e );
             }
 
+            await Logger.LogAsync ( "Done retrieving manga list." );
+
             return mangaList;
         }
 
         // Shamefully copied from Hakuneko
+        /// <summary>
+        /// Retrieves the list of <see cref="MangaChapter"/> from the
+        /// provided <see cref="Manga"/>
+        /// </summary>
+        /// <param name="Manga">The <see cref="Manga"/> to get the chapters from</param>
+        /// <returns></returns>
         public async override Task<IEnumerable<MangaChapter>> GetChaptersAsync ( Manga Manga )
         {
             var chapterList = new List<MangaChapter> ( );
@@ -220,6 +236,11 @@ LN: {LN}" );
         }
 
         // Shamefully copied from hakuneko (barely modified)
+        /// <summary>
+        /// Returns the url from all pages of the provided <see cref="MangaChapter"/>
+        /// </summary>
+        /// <param name="Chapter">The <see cref="MangaChapter"/> to scrap</param>
+        /// <returns></returns>
         public async override Task<String[]> GetPageLinksAsync ( MangaChapter Chapter )
         {
             var pageLinks = new List<String> ( );
@@ -260,6 +281,11 @@ LN: {LN}" );
         }
 
         // Shamefully copied from hakuneko
+        /// <summary>
+        /// Returns the URL of the image in the specified page
+        /// </summary>
+        /// <param name="pageLink">The link of the page to search on</param>
+        /// <returns></returns>
         public async Task<String> GetImageLinkAsync ( String pageLink )
         {
             try

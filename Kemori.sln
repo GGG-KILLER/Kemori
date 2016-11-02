@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kemori", "Kemori\Kemori.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kemori.Connectors.MangaFox", "Kemori.MangaFox\Kemori.Connectors.MangaFox.csproj", "{2FE4A748-1C02-40FB-B1FF-5B4E530A0EC2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kemori.ConnectorTest", "KemoriConnectorTest\Kemori.ConnectorTest.csproj", "{6405D70E-7FD4-4227-BA84-2342D4BD2274}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{2FE4A748-1C02-40FB-B1FF-5B4E530A0EC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FE4A748-1C02-40FB-B1FF-5B4E530A0EC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FE4A748-1C02-40FB-B1FF-5B4E530A0EC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6405D70E-7FD4-4227-BA84-2342D4BD2274}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6405D70E-7FD4-4227-BA84-2342D4BD2274}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6405D70E-7FD4-4227-BA84-2342D4BD2274}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6405D70E-7FD4-4227-BA84-2342D4BD2274}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

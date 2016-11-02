@@ -92,7 +92,6 @@
     <Compile Include="Classes\Fetch.cs" />
     <Compile Include="UI\FolderSelectDialog.cs" />
     <Compile Include="Classes\IO.cs" />
-    <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="Utils\SerializerUtils.cs" />
     <Compile Include="Controllers\ConnectorsManager.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />

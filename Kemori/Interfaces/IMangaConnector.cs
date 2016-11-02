@@ -38,17 +38,26 @@ namespace Kemori.Interfaces
         /// <summary>
         /// The UNIQUE ID of this connector
         /// </summary>
-        String ID { get; }
+        String ID
+        {
+            get;
+        }
 
         /// <summary>
         /// The website (MangaFox, MangaHere, etc.) this downloader is associated to
         /// </summary>
-        String Website { get; }
+        String Website
+        {
+            get;
+        }
 
         /// <summary>
         /// The list of mangas available for this provider
         /// </summary>
-        Manga[] MangaList { get; }
+        Manga[] MangaList
+        {
+            get;
+        }
 
         /// <summary>
         /// Called when the download makes progress

@@ -66,7 +66,7 @@ namespace Kemori.Base
         /// <summary>
         /// The UNIQUE ID of this connector (can only be set once)
         /// </summary>
-        /// 
+        ///
         public String ID
         {
             get
@@ -333,15 +333,27 @@ namespace Kemori.Base
         /// <summary>
         /// Loads the manga list from the local cache
         /// </summary>
-        public async void LoadMangaListFromCacheAsync ( )
+        public async Task LoadMangaListFromCacheAsync ( )
         {
             var fi = GetMangaListInfo ( );
 
             try
             {
                 if ( fi.Exists && fi.Length > 0 )
-                    this.MangaList = await SerializerUtils
+                {
+                    var mangas = await SerializerUtils
                         .DeserializeFromFileAsync<Manga[]> ( fi.FullName );
+
+                    if ( mangas != null )
+                    {
+                        foreach ( var manga in mangas )
+                        {
+                            manga.Connector = this;
+                        }
+
+                        this.MangaList = mangas;
+                    }
+                }
             }
             catch ( Exception )
             {
@@ -353,7 +365,7 @@ namespace Kemori.Base
         /// <summary>
         /// Updates the local cache of the manga list
         /// </summary>
-        public async void UpdateMangaListCacheAsync ( )
+        public async Task UpdateMangaListCacheAsync ( )
         {
             var list = ( await UpdateMangaListAsync ( ) )
                 .ToArray ( );
@@ -362,7 +374,7 @@ namespace Kemori.Base
 
             await SerializerUtils.SerializeToFileAsync (
                 list,
-                GetMangaListInfo ( ).FullName
+                GetMangaListInfo ( )?.FullName ?? $"{ID}.list"
             );
         }
 

@@ -61,14 +61,21 @@ namespace Kemori.Utils
         /// <returns></returns>
         public static T DeserializeFromFile<T> ( String FileName )
         {
-            var formatter = new BinaryFormatter
+            try
             {
-                AssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full,
-                TypeFormat = System.Runtime.Serialization.Formatters.FormatterTypeStyle.XsdString
-            };
+                var formatter = new BinaryFormatter
+                {
+                    AssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full,
+                    TypeFormat = System.Runtime.Serialization.Formatters.FormatterTypeStyle.XsdString
+                };
 
-            using ( var stream = File.Open ( FileName, FileMode.Open ) )
-                return ( T ) formatter.Deserialize ( stream );
+                using ( var stream = File.Open ( FileName, FileMode.Open ) )
+                    return ( T ) formatter.Deserialize ( stream );
+            }
+            catch ( Exception )
+            {
+                return default ( T );
+            }
         }
 
         /// <summary>

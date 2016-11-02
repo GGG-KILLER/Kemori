@@ -23,6 +23,7 @@ using Kemori.Interfaces;
 
 namespace Kemori.Base
 {
+    [Serializable]
     public class Manga : IManga
     {
         /// <summary>
@@ -30,8 +31,8 @@ namespace Kemori.Base
         /// </summary>
         public MangaChapter[] Chapters { get; set; }
 
+        [NonSerialized]
         private MangaConnector _connector;
-        private Boolean _connectorSet;
 
         /// <summary>
         /// The connector associated with this manga
@@ -44,15 +45,10 @@ namespace Kemori.Base
             }
             set
             {
-                if ( !_connectorSet )
-                {
+                if ( _connector == null )
                     _connector = value;
-                    _connectorSet = true;
-                }
                 else
-                {
                     throw new InvalidOperationException ( "Connector is a one-time set property!" );
-                }
             }
         }
 

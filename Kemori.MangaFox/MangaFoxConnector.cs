@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Web;
 using Kemori.Base;
 using Kemori.Extensions;
 using Kemori.Interfaces;
@@ -28,6 +29,9 @@ namespace Kemori.Connectors
 {
     public class MangaFoxConnector : MangaConnector
     {
+        /// <summary>
+        /// Called when the download makes progress
+        /// </summary>
         public override event MangaDownloadProgressChangedHandler MangaDownloadProgressChanged;
 
         public MangaFoxConnector ( )
@@ -95,7 +99,7 @@ namespace Kemori.Connectors
         public override async Task<IEnumerable<Manga>> UpdateMangaListAsync ( )
         {
             var mangaList = new List<Manga> ( );
-            await Logger.LogAsync ( "Starting to update the manga list of mangafox.me" );
+            Logger.Log ( "Starting to update the manga list of mangafox.me" );
             try
             {
                 var HTML = ( await HTTP.GetStringAsync ( "http://mangafox.me/manga/" ) );
@@ -120,6 +124,7 @@ namespace Kemori.Connectors
 
                         if ( mangaLabel != "" )
                         {
+                            mangaLabel = HttpUtility.HtmlDecode ( mangaLabel );
                             mangaList.Add ( new Manga
                             {
                                 Name = mangaLabel,
@@ -133,11 +138,11 @@ namespace Kemori.Connectors
             }
             catch ( Exception e )
             {
-                await Logger.LogAsync ( "Error retrieving manga list: " );
-                await Logger.LogAsync ( e );
+                Logger.Log ( "Error retrieving manga list: " );
+                Logger.Log ( e );
             }
 
-            await Logger.LogAsync ( "Done retrieving manga list." );
+            Logger.Log ( "Done retrieving manga list." );
 
             return mangaList;
         }
@@ -228,8 +233,8 @@ namespace Kemori.Connectors
             }
             catch ( Exception e )
             {
-                await Logger.LogAsync ( "Error retrieving chapter list: " );
-                await Logger.LogAsync ( e );
+                Logger.Log ( "Error retrieving chapter list: " );
+                Logger.Log ( e );
             }
 
             return chapterList;
@@ -273,8 +278,8 @@ namespace Kemori.Connectors
             }
             catch ( Exception e )
             {
-                await Logger.LogAsync ( "Couldn't retrieve page links:" );
-                await Logger.LogAsync ( e );
+                Logger.Log ( "Couldn't retrieve page links:" );
+                Logger.Log ( e );
             }
 
             return pageLinks.ToArray ( );
@@ -303,8 +308,8 @@ namespace Kemori.Connectors
             }
             catch ( Exception e )
             {
-                await Logger.LogAsync ( "Couldn't retrieve image link:" );
-                await Logger.LogAsync ( e );
+                Logger.Log ( "Couldn't retrieve image link:" );
+                Logger.Log ( e );
             }
 
             return null;

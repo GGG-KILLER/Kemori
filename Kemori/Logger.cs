@@ -32,28 +32,33 @@ namespace Kemori
             LogFile = new FileInfo ( PathUtils.GetPathForFile ( "kemori.log" ) );
         }
 
-        public async Task InitAsync ( )
+        public void Init ( )
         {
-            // 2 MB size limit
-            if ( LogFile.Exists && LogFile.Length > 2 * 1024 * 1024 )
-            {
-                LogFile.Delete ( );
-            }
+            lock ( LogFile )
+            {// 2 MB size limit
+                if ( LogFile.Exists && LogFile.Length > 2 * 1024 * 1024 )
+                {
+                    LogFile.Delete ( );
+                }
 
-            var b = new String ( '=', 24 );
-            await this.LogAsync ( String.Empty );
-            await this.LogAsync ( b );
-            await this.LogAsync ( $"=== {( DateTime.Now.ToString ( "%Y-%m-%dT%H:%M:%S" ) )} +0000 ===" );
-            await this.LogAsync ( b );
-            await this.LogAsync ( String.Empty );
+                var b = new String ( '=', 24 );
+                this.Log ( String.Empty );
+                this.Log ( b );
+                this.Log ( $"=== {( DateTime.Now.ToString ( "%Y-%m-%dT%H:%M:%S" ) )} +0000 ===" );
+                this.Log ( b );
+                this.Log ( String.Empty );
+            }
         }
 
-        public async Task LogAsync ( Object item )
+        public void Log ( Object item )
         {
-            using ( var log = new StreamWriter ( LogFile.FullName, true ) )
+            lock ( LogFile )
             {
-                await log.WriteLineAsync ( item.ToString ( ) );
-                await log.FlushAsync ( );
+                using ( var log = new StreamWriter ( LogFile.FullName, true ) )
+                {
+                    log.WriteLine( item.ToString ( ) );
+                    log.Flush ( );
+                }
             }
         }
     }

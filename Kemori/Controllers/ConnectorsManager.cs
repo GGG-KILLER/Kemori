@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Kemori.Base;
 
 namespace Kemori.Controllers
@@ -31,17 +30,14 @@ namespace Kemori.Controllers
     /// </summary>
     internal class ConnectorsManager
     {
-        /// <summary>
-        /// The type of the <see cref="MangaConnector"/> class
-        /// </summary>
-        private static Type MangaConnectorType = typeof ( MangaConnector );
+        #region Get* methods
 
         /// <summary>
         /// Retrieves all <see cref="MangaConnector"/>s from all assemblies in the
         /// "Connectors" folder asynchronously
         /// </summary>
         /// <returns></returns>
-        public async static Task<IList<MangaConnector>> GetAllAsync ( )
+        public static IList<MangaConnector> GetAll ( )
         {
             var list = new List<MangaConnector> ( );
             var log = new Logger ( );
@@ -64,8 +60,8 @@ namespace Kemori.Controllers
                     catch ( Exception e )
                     {
                         // Logs validation errors
-                        await log.LogAsync ( $"Error loading connector {connType.FullName} at \"{path}\":" );
-                        await log.LogAsync ( e );
+                        log.Log ( $"Error loading connector {connType.FullName} at \"{path}\":" );
+                        log.Log ( e );
                     }
                 }
             }
@@ -78,9 +74,9 @@ namespace Kemori.Controllers
         /// </summary>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public async static Task<MangaConnector> GetByIDAsync ( String ID )
+        public static MangaConnector GetByID ( String ID )
         {
-            return ( await GetAllAsync ( ) )
+            return ( GetAll ( ) )
                 .FirstOrDefault ( conn => conn.ID == ID );
         }
 
@@ -89,13 +85,25 @@ namespace Kemori.Controllers
         /// </summary>
         /// <param name="Website">Website to search for</param>
         /// <returns></returns>
-        public async static Task<IEnumerable<MangaConnector>> GetByWebsiteAsync ( String Website )
+        public static IEnumerable<MangaConnector> GetByWebsite ( String Website )
         {
-            return ( await GetAllAsync ( ) )
+            return ( GetAll ( ) )
                 .Where ( conn => conn.Website == Website );
         }
 
+        #endregion Get* methods
+
+        #region Connector Handling
+
+
+        #endregion
+
         #region Reflection
+
+        /// <summary>
+        /// The type of the <see cref="MangaConnector"/> class
+        /// </summary>
+        private static Type MangaConnectorType = typeof ( MangaConnector );
 
         /// <summary>
         /// Returns the paths of all Kemori.Connectors.*.dll in the Connectors directory
@@ -211,7 +219,8 @@ namespace Kemori.Controllers
         /// <param name="methodName">Method name to search</param>
         private static Boolean MethodExists ( Type type, String methodName )
         {
-            return type.GetMethod ( methodName, BindingFlags.DeclaredOnly ) != null;
+            var method = type.GetMethod ( methodName );
+            return method != null && method.DeclaringType == type;
         }
 
         #endregion Reflection

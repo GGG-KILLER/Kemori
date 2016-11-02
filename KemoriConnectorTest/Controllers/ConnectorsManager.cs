@@ -22,41 +22,25 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Kemori.Base;
-using Kemori.Utils;
 
 namespace Kemori.ConnectorTest.Controllers
 {
     /// <summary>
     /// Class that manages the loading and searching of <see cref="MangaConnector"/>s
     /// </summary>
-    internal class ConnectorsManager : IDisposable
+    internal class ConnectorsManager
     {
-        AppDomain SafeDomain;
-
-        public ConnectorsManager ( )
-        {
-            var setup = new AppDomainSetup
-            {
-                ApplicationBase = AppDomain.CurrentDomain.SetupInformation.ApplicationBase + @"Connectors\",
-                ApplicationName = nameof ( Kemori ),
-                CachePath = PathUtils.GetPathForFile(@"Cache\"),
-                DisallowPublisherPolicy = true,
-                DynamicBase = PathUtils.GetPathForFile ( @"DynamicBase\" ),
-            };
-            SafeDomain = AppDomain.CreateDomain ( "KemoriMangaConnectors", null, setup );
-        }
-
         /// <summary>
         /// The type of the <see cref="MangaConnector"/> class
         /// </summary>
-        private Type MangaConnectorType = typeof ( MangaConnector );
+        private static readonly Type MangaConnectorType = typeof ( MangaConnector );
 
         /// <summary>
         /// Retrieves all <see cref="MangaConnector"/>s from all assemblies in the
         /// "Connectors" folder asynchronously
         /// </summary>
         /// <returns></returns>
-        public IDictionary<MangaConnector, IList<String>> ValidateAll ( )
+        public static IDictionary<MangaConnector, IList<String>> ValidateAll ( )
         {
             var list = new Dictionary<MangaConnector, IList<String>> ( );
 
@@ -102,7 +86,7 @@ namespace Kemori.ConnectorTest.Controllers
         /// </summary>
         /// <param name="FileName">Path of the assembly to load</param>
         /// <returns></returns>
-        private IList<Type> GetConnectorsTypes ( String FileName )
+        private static IList<Type> GetConnectorsTypes ( String FileName )
         {
             var assm = Assembly.LoadFile ( FileName );
             var types = assm.ExportedTypes;
@@ -195,24 +179,8 @@ namespace Kemori.ConnectorTest.Controllers
         /// <param name="methodName">Method name to search</param>
         private static Boolean MethodExists ( Type type, String methodName )
         {
-            return type.GetMethod ( methodName, BindingFlags.DeclaredOnly ) != null;
-        }
-
-        public void Dispose ( )
-        {
-            try
-            {
-                AppDomain.Unload ( SafeDomain );
-            }
-            catch ( Exception )
-            {
-                return;
-            }
-            finally
-            {
-                SafeDomain = null;
-                GC.SuppressFinalize ( this );
-            }
+            var method = type.GetMethod ( methodName );
+            return method != null && method.DeclaringType == type;
         }
 
         #endregion Reflection

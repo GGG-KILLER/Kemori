@@ -49,8 +49,8 @@ namespace Kemori.Forms
             System.Windows.Forms.Label label1;
             System.Windows.Forms.Label label2;
             System.Windows.Forms.Label label3;
-            System.Windows.Forms.ColumnHeader chNameHeader;
             System.Windows.Forms.Label label5;
+            this.chNameHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.dlPathTextbox = new System.Windows.Forms.TextBox();
             this.dlPathButton = new System.Windows.Forms.Button();
             this.cbConnectors = new System.Windows.Forms.ComboBox();
@@ -66,14 +66,57 @@ namespace Kemori.Forms
             this.updateAllBtn = new System.Windows.Forms.Button();
             this.chList = new System.Windows.Forms.ListView();
             this.dgvJobs = new System.Windows.Forms.DataGridView();
+            this.Manga = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Chapter = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Progress = new GUtils.Forms.DataGridView.DataGridViewProgressColumn();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
-            chNameHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             label5 = new System.Windows.Forms.Label();
             this.ssLoadProgress.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvJobs)).BeginInit();
             this.SuspendLayout();
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(13, 15);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(83, 13);
+            label1.TabIndex = 1;
+            label1.Text = "Download Path:";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(13, 41);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(44, 13);
+            label2.TabIndex = 4;
+            label2.Text = "Search:";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(15, 66);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(62, 13);
+            label3.TabIndex = 8;
+            label3.Text = "Manga List:";
+            // 
+            // label5
+            // 
+            label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            label5.AutoSize = true;
+            label5.Location = new System.Drawing.Point(15, 286);
+            label5.Name = "label5";
+            label5.Size = new System.Drawing.Size(80, 13);
+            label5.TabIndex = 20;
+            label5.Text = "Download jobs:";
+            // 
+            // chNameHeader
+            // 
+            this.chNameHeader.Text = "Chapter";
             // 
             // dlPathTextbox
             // 
@@ -84,15 +127,6 @@ namespace Kemori.Forms
             this.dlPathTextbox.ReadOnly = true;
             this.dlPathTextbox.Size = new System.Drawing.Size(462, 20);
             this.dlPathTextbox.TabIndex = 0;
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new System.Drawing.Point(13, 15);
-            label1.Name = "label1";
-            label1.Size = new System.Drawing.Size(83, 13);
-            label1.TabIndex = 1;
-            label1.Text = "Download Path:";
             // 
             // dlPathButton
             // 
@@ -105,20 +139,10 @@ namespace Kemori.Forms
             this.dlPathButton.UseVisualStyleBackColor = true;
             this.dlPathButton.Click += new System.EventHandler(this.dlPathButton_Click);
             // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Location = new System.Drawing.Point(13, 41);
-            label2.Name = "label2";
-            label2.Size = new System.Drawing.Size(44, 13);
-            label2.TabIndex = 4;
-            label2.Text = "Search:";
-            // 
             // cbConnectors
             // 
             this.cbConnectors.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cbConnectors.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbConnectors.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cbConnectors.FormattingEnabled = true;
             this.cbConnectors.Location = new System.Drawing.Point(403, 38);
             this.cbConnectors.Name = "cbConnectors";
@@ -137,23 +161,15 @@ namespace Kemori.Forms
             this.cbSearch.TabIndex = 7;
             this.cbSearch.TextChanged += new System.EventHandler(this.cbSearch_TextChanged);
             // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new System.Drawing.Point(15, 66);
-            label3.Name = "label3";
-            label3.Size = new System.Drawing.Size(62, 13);
-            label3.TabIndex = 8;
-            label3.Text = "Manga List:";
-            // 
             // mangaList
             // 
             this.mangaList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.mangaList.FormattingEnabled = true;
             this.mangaList.Location = new System.Drawing.Point(16, 82);
+            this.mangaList.MinimumSize = new System.Drawing.Size(284, 199);
             this.mangaList.Name = "mangaList";
-            this.mangaList.Size = new System.Drawing.Size(284, 186);
+            this.mangaList.Size = new System.Drawing.Size(284, 199);
             this.mangaList.TabIndex = 9;
             this.mangaList.SelectedIndexChanged += new System.EventHandler(this.mangaList_SelectedIndexChangedAsync);
             // 
@@ -172,7 +188,7 @@ namespace Kemori.Forms
             // 
             this.dlButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.dlButton.Location = new System.Drawing.Point(16, 484);
+            this.dlButton.Location = new System.Drawing.Point(19, 496);
             this.dlButton.Name = "dlButton";
             this.dlButton.Size = new System.Drawing.Size(571, 23);
             this.dlButton.TabIndex = 12;
@@ -232,6 +248,7 @@ namespace Kemori.Forms
             this.updateAllBtn.TabIndex = 16;
             this.updateAllBtn.Text = "Update All";
             this.updateAllBtn.UseVisualStyleBackColor = true;
+            this.updateAllBtn.Click += new System.EventHandler(this.updateAllBtn_ClickAsync);
             // 
             // chList
             // 
@@ -239,21 +256,19 @@ namespace Kemori.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.chList.CheckBoxes = true;
             this.chList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            chNameHeader});
+            this.chNameHeader});
             this.chList.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.chList.LabelWrap = false;
             this.chList.Location = new System.Drawing.Point(306, 82);
+            this.chList.MinimumSize = new System.Drawing.Size(292, 199);
             this.chList.Name = "chList";
             this.chList.ShowGroups = false;
-            this.chList.Size = new System.Drawing.Size(281, 186);
+            this.chList.Size = new System.Drawing.Size(292, 199);
             this.chList.TabIndex = 18;
             this.chList.TabStop = false;
             this.chList.UseCompatibleStateImageBehavior = false;
             this.chList.View = System.Windows.Forms.View.List;
-            // 
-            // chNameHeader
-            // 
-            chNameHeader.Text = "Chapter";
+            this.chList.Resize += new System.EventHandler(this.chList_Resize);
             // 
             // dgvJobs
             // 
@@ -263,26 +278,42 @@ namespace Kemori.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvJobs.BackgroundColor = System.Drawing.SystemColors.Window;
             this.dgvJobs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvJobs.Location = new System.Drawing.Point(18, 302);
+            this.dgvJobs.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Manga,
+            this.Chapter,
+            this.Progress});
+            this.dgvJobs.Location = new System.Drawing.Point(18, 305);
             this.dgvJobs.Name = "dgvJobs";
             this.dgvJobs.ReadOnly = true;
             this.dgvJobs.Size = new System.Drawing.Size(569, 176);
             this.dgvJobs.TabIndex = 19;
             // 
-            // label5
+            // Manga
             // 
-            label5.AutoSize = true;
-            label5.Location = new System.Drawing.Point(15, 286);
-            label5.Name = "label5";
-            label5.Size = new System.Drawing.Size(80, 13);
-            label5.TabIndex = 20;
-            label5.Text = "Download jobs:";
+            this.Manga.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Manga.HeaderText = "Manga";
+            this.Manga.Name = "Manga";
+            this.Manga.ReadOnly = true;
+            // 
+            // Chapter
+            // 
+            this.Chapter.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Chapter.HeaderText = "Chapter";
+            this.Chapter.Name = "Chapter";
+            this.Chapter.ReadOnly = true;
+            // 
+            // Progress
+            // 
+            this.Progress.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Progress.HeaderText = "Progress";
+            this.Progress.Name = "Progress";
+            this.Progress.ReadOnly = true;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(610, 519);
+            this.ClientSize = new System.Drawing.Size(610, 548);
             this.Controls.Add(label5);
             this.Controls.Add(this.dgvJobs);
             this.Controls.Add(this.chList);
@@ -300,10 +331,12 @@ namespace Kemori.Forms
             this.Controls.Add(this.dlPathButton);
             this.Controls.Add(label1);
             this.Controls.Add(this.dlPathTextbox);
+            this.MinimumSize = new System.Drawing.Size(626, 587);
             this.Name = "MainForm";
             this.ShowIcon = false;
             this.Text = "Kemori";
             this.Load += new System.EventHandler(this.MainForm_LoadAsync);
+            this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.ssLoadProgress.ResumeLayout(false);
             this.ssLoadProgress.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvJobs)).EndInit();
@@ -329,5 +362,9 @@ namespace Kemori.Forms
         private System.Windows.Forms.Button updateAllBtn;
         private System.Windows.Forms.ListView chList;
         private System.Windows.Forms.DataGridView dgvJobs;
+        private System.Windows.Forms.ColumnHeader chNameHeader;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Manga;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Chapter;
+        private GUtils.Forms.DataGridView.DataGridViewProgressColumn Progress;
     }
 }

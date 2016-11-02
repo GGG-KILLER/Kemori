@@ -28,6 +28,7 @@ using Kemori.Base;
 using Kemori.Controllers;
 using Kemori.Extensions;
 using Kemori.Resources;
+using Kemori.Utils;
 
 namespace Kemori.Forms
 {
@@ -63,14 +64,23 @@ namespace Kemori.Forms
         /// </summary>
         private Boolean SearchIsBookmark;
 
+        /// <summary>
+        /// General instance of the Logger class
+        /// </summary>
+        private readonly Logger Logger;
+
+        Int32 chListInitialX,
+              mangaListInitialWidth,
+              chListInitialWidth;
+
         public MainForm ( )
         {
             InitializeComponent ( );
-            // This is perfectly okay since we won't use anything after it or need to
-            // be sure of completion.
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            new Logger ( ).InitAsync ( );
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            Logger = new Logger ( );
+
+            chListInitialX = chList.Location.X;
+            mangaListInitialWidth = mangaList.Width;
+            chListInitialWidth = chList.Width;
         }
 
         #region Event listeners
@@ -82,6 +92,9 @@ namespace Kemori.Forms
         /// <param name="e"></param>
         private async void MainForm_LoadAsync ( Object sender, EventArgs e )
         {
+            Logger.Init ( );
+            SetUIEnabledState ( false );
+
             await ConfigsManager.LoadAsync ( );
 
             if ( ConfigsManager.SavePath == null )
@@ -99,20 +112,26 @@ namespace Kemori.Forms
             lblLoadProgress.Text = "Connectors loaded.";
             pbLoadPorgress.Value = 100;
 
-            // Config loading
-            try
+            ssLoadProgressSet ( 0, "Loading local manga lists" );
+
+            for ( var i = 0 ; i < ConnectorCollection.Length ; i++ )
             {
-                await ConfigsManager.LoadAsync ( );
+                ssLoadProgressSet (
+                    Number.GetPercentage ( i, ConnectorCollection.Length ),
+                    "Loading local manga lists"
+                );
+                ConnectorCollection[i].Logger = Logger;
+                await ConnectorCollection[i].LoadMangaListFromCacheAsync ( );
             }
-            catch ( Exception )
-            {
-                // A redundant call so we don't get an "catch shouldn't be empty error"
-                SetUIEnabledState ( true );
-            }
+
+            ssLoadProgressSet ( 100, "All set!" );
 
             UpdateMangaListUI ( );
 
-            ssLoadProgress.Visible = false;
+            chList_Resize ( null, null );
+
+            SetUIEnabledState ( true );
+            //ssLoadProgress.Visible = false;
         }
 
         /// <summary>
@@ -274,33 +293,55 @@ namespace Kemori.Forms
             ConfigsManager.SavePath = fsd.FileName;
         }
 
-        private void Msg ( Object o )
-        { MessageBox.Show ( this, "MSG: " + o ); }
-
         /// <summary>
         /// Loads all connectors into the UI and Form
         /// </summary>
         /// <returns></returns>
         private async Task LoadConnectorsAsync ( )
         {
-            // Load connectors
-            ConnectorCollection = ( await ConnectorsManager.GetAllAsync ( ) )
-                .ToArray ( );
-            Msg ( ConnectorCollection.Length );
+            await Task.Run ( ( ) =>
+              {
+                  ssLoadProgressSet ( 0, "Loading connectors" );
 
-            // Sort connectors
-            pbLoadPorgress.Value = 50;
-            Array.Sort ( ConnectorCollection, new MCComp ( ) );
-            Msg ( ConnectorCollection.Length );
-#if DEBUG
-            lblLoadProgress.Text = "Populating connectors combobox...";
-#endif
-            // Populate connectors combobox
-            pbLoadPorgress.Value = 75;
-            foreach ( var connector in ConnectorCollection )
-                cbConnectors.Items.Add ( connector.Website );
+                  // Load connectors
+                  ConnectorCollection = ( ConnectorsManager.GetAll ( ) )
+                        .ToArray ( );
 
-            Msg ( cbConnectors.Items.Count );
+                  // Sort connectors
+
+                  ssLoadProgressSet ( 50, "Sorting connectors" );
+                  Array.Sort ( ConnectorCollection, new MCComp ( ) );
+
+                  // Populate connectors combobox
+                  ssLoadProgressSet ( 75, "Populating UI with connectors" );
+
+                  cbConnectors.InvokeEx ( cb =>
+                  {
+                      if ( ConnectorCollection.Count ( ) < 1 )
+                          return;
+
+                      foreach ( var connector in ConnectorCollection )
+                          cb.Items.Add ( connector.Website );
+                      cb.SelectedIndex = 0;
+                  } );
+              } );
+        }
+
+        /// <summary>
+        /// Changes the ToolStrip control values thread-safely
+        /// </summary>
+        /// <param name="Progress">Current progress</param>
+        /// <param name="Task">Task being executed</param>
+        private void ssLoadProgressSet ( Int32 Progress, String Task )
+        {
+            ssLoadProgress.InvokeEx ( ss =>
+            {
+                ( ( ToolStripProgressBar ) ss.Items[nameof ( pbLoadPorgress )] )
+                    .Value = Progress;
+
+                ( ( ToolStripLabel ) ss.Items[nameof ( lblLoadProgress )] )
+                    .Text = Task;
+            } );
         }
 
         /// <summary>
@@ -438,6 +479,49 @@ namespace Kemori.Forms
                 cbConnectors.Enabled = updateAllBtn.Enabled =
                 mangaList.Enabled = chapterSelectAll.Enabled =
                 chList.Enabled = dlButton.Enabled = state;
+        }
+
+        private async void updateAllBtn_ClickAsync ( Object sender, EventArgs e )
+        {
+            var ret = MessageBox.Show ( this, "This operation can take from 5 minutes to *a lot*, are you sure you want to do this?", "Kemori - Are you sure?", MessageBoxButtons.OKCancel );
+            if ( ret != DialogResult.OK )
+                return;
+
+            SetUIEnabledState ( false );
+            ssLoadProgress.Visible = true;
+
+            ssLoadProgressSet ( 0, "Updating local manga lists" );
+
+            for ( var i = 0 ; i < ConnectorCollection.Length ; i++ )
+            {
+                await ConnectorCollection[i].UpdateMangaListCacheAsync ( );
+                ssLoadProgressSet (
+                    Number.GetPercentage ( i, ConnectorCollection.Length ),
+                    "Updating local manga lists"
+                );
+            }
+
+            ssLoadProgressSet ( 100, "Local manga lists updated" );
+
+            ssLoadProgress.Visible = false;
+            SetUIEnabledState ( true );
+        }
+
+        private void chList_Resize ( Object sender, EventArgs e )
+        {
+            chNameHeader.Width = chList.Width - 2;
+        }
+
+        private void MainForm_Resize ( Object sender, EventArgs e )
+        {
+            var proportion = ( ( Double ) this.Width ) / ( ( Double ) this.MinimumSize.Width );
+
+            chList.Location = new Point ( ( Int32 ) Math.Floor ( chListInitialX * proportion ), chList.Location.Y );
+            chapterSelectAll.Location = new Point ( chList.Location.X, chapterSelectAll.Location.Y );
+
+            chList.Width = ( Int32 ) Math.Floor ( chListInitialWidth * proportion );
+
+            mangaList.Width = ( Int32 ) Math.Ceiling ( mangaListInitialWidth * proportion );
         }
     }
 }

@@ -22,6 +22,11 @@ namespace Kemori.Utils
 {
     internal class Number
     {
+        public static Int32 GetPercentage ( Int32 Current, Int32 Total )
+        {
+            return ( Int32 ) ( Current / ( Double ) Total * 100D );
+        }
+
         /// <summary>
         /// Converts from bytes to megabytes (precision of 2 houses)
         /// </summary>

@@ -74,8 +74,10 @@ namespace Kemori.Classes
         private void CheckWC ( String URL )
         {
             // Creates the webclient if there isn't any
+            //if ( _wc == null )
+            //    _wc = CloudflareEvader.CreateBypassedWebClient ( URL, Referer );
             if ( _wc == null )
-                _wc = CloudflareEvader.CreateBypassedWebClient ( URL, Referer );
+                _wc = new WebClient ( );
 
             _wc.DownloadProgressChanged += _wc_DownloadProgressChanged;
 

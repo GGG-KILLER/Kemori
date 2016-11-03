@@ -39,6 +39,11 @@ namespace Kemori.Classes
         private String Referer;
 
         /// <summary>
+        /// User-Agent to be used with the 
+        /// </summary>
+        public String UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.87 Safari/537.36";
+
+        /// <summary>
         /// Called when the download progress is changed
         /// </summary>
         public event DownloadProgressChangedEventHandler DownloadProgressChanged;
@@ -79,8 +84,17 @@ namespace Kemori.Classes
             if ( _wc == null )
                 _wc = new WebClient ( );
 
+            try
+            {
+                _wc.DownloadProgressChanged -= _wc_DownloadProgressChanged;
+            }
+#pragma warning disable CC0004 // Catch block cannot be empty
+            catch { }
+#pragma warning restore CC0004 // Catch block cannot be empty
+
             _wc.DownloadProgressChanged += _wc_DownloadProgressChanged;
 
+            _wc.Headers.Set ( HttpRequestHeader.UserAgent, UserAgent );
             // Set the referer if there's one
             if ( Referer != null )
                 _wc.Headers.Set ( nameof ( Referer ), Referer );

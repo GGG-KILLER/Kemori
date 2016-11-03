@@ -167,10 +167,25 @@ namespace Kemori.Classes
         /// <returns></returns>
         public String PathForManga ( String Name )
         {
-            return Path.Combine (
-                ConfigsManager.SavePath,
-                SafeFolderName ( Name )
-            );
+            try
+            {
+                return Path.Combine (
+                    ConfigsManager.SavePath,
+                    SafeFolderName ( Name )
+                );
+            }
+            catch ( Exception e )
+            {
+                var l = new Logger ( );
+                l.Log ( "Failed to generate path for manga :" );
+                l.Log ( $"\tName: {Name}" );
+                l.Log ( $"\tSafeName: {SafeFolderName ( Name )}" );
+
+                return Path.Combine (
+                    ConfigsManager.SavePath,
+                    SafeFolderName ( Name )
+                );
+            }
         }
 
         /// <summary>
@@ -192,7 +207,7 @@ namespace Kemori.Classes
         /// <param name="MangaName"></param>
         /// <param name="ChapterName"></param>
         /// <returns></returns>
-        public String PathForChapter(String MangaName, String ChapterName)
+        public String PathForChapter ( String MangaName, String ChapterName )
         {
             return Path.Combine (
                 PathForManga ( MangaName ),
@@ -210,7 +225,7 @@ namespace Kemori.Classes
             var safe = Unsafe;
 
             foreach ( var ch in Path.GetInvalidPathChars ( ) )
-                safe.Replace ( ch, '\0' );
+                safe = safe.Replace ( ch.ToString ( ), string.Empty );
 
             return safe;
         }

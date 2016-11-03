@@ -62,7 +62,8 @@ namespace Kemori.Base
         /// </summary>
         public IO IO;
 
-        String _id;
+        private String _id;
+
         /// <summary>
         /// The UNIQUE ID of this connector (can only be set once)
         /// </summary>
@@ -90,8 +91,8 @@ namespace Kemori.Base
             get; private set;
         }
 
+        private String _website;
 
-        String _website;
         /// <summary>
         /// The website (MangaFox, MangaHere, etc.) this downloader is associated to
         /// </summary>
@@ -230,21 +231,27 @@ namespace Kemori.Base
                 from = NormalizeChapterNumber ( from );
                 to = NormalizeChapterNumber ( to );
 
-                return $"{from}-{to}";
+                return from + '-' + to;
             }
 
             // sometimes chapter numbers are followed by version (i.e. 13v2, 13v.2)
             var posVchar = ChapterNumber.IndexOf ( 'v' );
             if ( posVchar > -1 )
             {
-                chNumberResidualLength = Math.Max ( chNumberResidualLength, ChapterNumber.Length - posVchar );
+                chNumberResidualLength = Math.Max (
+                    chNumberResidualLength,
+                    ChapterNumber.Length - posVchar
+                );
             }
 
             // sometimes chapter numbers contains a dot (i.e. 13.5, 13.5v2, 13.5.v2)
             var posDot = ChapterNumber.IndexOf ( '.' );
             if ( posDot > -1 )
             {
-                chNumberResidualLength = Math.Max ( chNumberResidualLength, ChapterNumber.Length - posDot );
+                chNumberResidualLength = Math.Max (
+                    chNumberResidualLength,
+                    ChapterNumber.Length - posDot
+                );
             }
 
             while ( ChapterNumber.Length - chNumberResidualLength < 4 )

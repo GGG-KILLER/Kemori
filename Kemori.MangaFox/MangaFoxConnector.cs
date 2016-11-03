@@ -103,8 +103,8 @@ namespace Kemori.Connectors
 
             try
             {
-                var HTML = await HTTP.GetStringAsync ( "http://mangafox.me/manga/" );
-                var indexStart = HTML.IndexOfAfter ( "<div class=\"manga_list\">" );
+                var HTML = await HTTP.GetStringAsync ( "http://mangafox.me/manga/", "http://mangafox.me" );
+                var indexStart = HTML.IndexOf ( "<div class=\"manga_list\">" ) + 24;
                 var indexEnd = HTML.IndexOf ( "<div id=\"footer\">" );
 
                 // Only continue if we got the right html
@@ -204,8 +204,8 @@ namespace Kemori.Connectors
                         // Getting chapter number
                         indexStart = indexEnd + 2;
                         indexEnd = HTML.IndexOf ( '<', indexStart ); // "</a>"
-                        chNumber = HTML.Substring ( indexStart, indexEnd - indexStart )
-                            .AfterLast ( ' ' );
+                        chNumber = HTML.Substring ( indexStart, indexEnd - indexStart );
+                        chNumber = chNumber.Substring ( chNumber.LastIndexOf ( ' ' ) + 1 ); // AfterLast(' ');
 
                         chNumber = NormalizeChapterNumber ( chNumber );
 
@@ -311,14 +311,7 @@ namespace Kemori.Connectors
                 var indexStart = HTML.IndexOf ( "this.src='" ) + 10;
                 var indexEnd = HTML.IndexOf ( '\'', indexStart );
 
-                if ( indexStart > 9 && indexEnd >= -1 )
-                {
-                    return HTML.Substring ( indexStart, indexEnd - indexStart );
-                }
-                else
-                {
-                    return String.Empty;
-                }
+                return indexStart > 9 && indexEnd >= -1 ? HTML.Substring ( indexStart, indexEnd - indexStart ) : String.Empty;
             }
             catch ( Exception e )
             {

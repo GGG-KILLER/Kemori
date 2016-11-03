@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Kemori.Base;
 using Kemori.Utils;
@@ -46,6 +47,11 @@ namespace Kemori.Resources
         }
 
         /// <summary>
+        /// Event fired when Save Path changes
+        /// </summary>
+        public static event PropertyChangedEventHandler SavePathChanged;
+
+        /// <summary>
         /// The path where the mangas should be saved to
         /// </summary>
         public static String SavePath
@@ -53,6 +59,9 @@ namespace Kemori.Resources
             set
             {
                 Config.SavePath = value;
+
+                SavePathChanged?.Invoke ( null, new PropertyChangedEventArgs ( nameof ( SavePath ) ) );
+
                 Save ( );
             }
             get

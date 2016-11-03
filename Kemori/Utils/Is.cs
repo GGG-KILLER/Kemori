@@ -20,12 +20,20 @@ using System;
 
 namespace Kemori.Utils
 {
+    /// <summary>
+    /// A class to check for other types as strings
+    /// </summary>
     internal static class Is
     {
-        public static Boolean Int ( String s )
+        /// <summary>
+        /// Returns wether the string is a number
+        /// </summary>
+        /// <param name="s">The value</param>
+        /// <returns></returns>
+        public static Boolean Number ( String s )
         {
-            Int32 result;
-            return Int32.TryParse ( s, out result );
+            Int32 resulti; Single results; Double resultd;
+            return Int32.TryParse ( s, out resulti ) || Single.TryParse ( s, out results ) || Double.TryParse ( s, out resultd );
         }
     }
 }

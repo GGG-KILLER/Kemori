@@ -201,26 +201,22 @@ namespace Kemori.Base
              * %ct = "Text Text %c"
              */
 
-            // Remove preceding/suceeding text from chapter number
             var chNumberResidualLength = 0;
 
-            // Sometimes chapter numbers are followed by text
-            var posFirstSpace = ChapterNumber.IndexOf ( " " );
-
-            // Sometimes chapter numbers are preceded by text
-            var posLastSpace = ChapterNumber.LastIndexOf ( " " );
-
+            // Remove preceding/suceeding text from chapter number
+            var posFirstSpace = ChapterNumber.IndexOf ( ' ' ); // Sometimes chapter numbers are followed by text
+            var posLastSpace = ChapterNumber.LastIndexOf ( ' ' ); // Sometimes chapter numbers are preceded by text
             if ( posFirstSpace > -1 && posLastSpace > -1 )
             {
                 // NOTE: in case numbers are at beginning and ending, the number at beginning got higher priority
-                if ( Is.Int ( ChapterNumber.Substring ( 0, posFirstSpace ) ) )
+                if ( Is.Number ( ChapterNumber.Substring ( 0, posFirstSpace ) ) )
                 {
-                    return ChapterNumber.Substring ( 0, posFirstSpace );
+                    ChapterNumber = ChapterNumber.Substring ( 0, posFirstSpace );
                 }
 
-                if ( Is.Int ( ChapterNumber.Substring ( posLastSpace + 1 ) ) )
+                if ( Is.Number ( ChapterNumber.Substring ( posLastSpace + 1 ) ) )
                 {
-                    return ChapterNumber.Substring ( posLastSpace + 1 );
+                    ChapterNumber = ChapterNumber.Substring ( posLastSpace + 1 );
                 }
             }
 
@@ -229,7 +225,7 @@ namespace Kemori.Base
             if ( posHyphen > -1 )
             {
                 var from = ChapterNumber.Substring ( 0, posHyphen );
-                var to = ChapterNumber.Substring ( posHyphen );
+                var to = ChapterNumber.Substring ( posHyphen + 1 );
 
                 from = NormalizeChapterNumber ( from );
                 to = NormalizeChapterNumber ( to );
@@ -251,12 +247,12 @@ namespace Kemori.Base
                 chNumberResidualLength = Math.Max ( chNumberResidualLength, ChapterNumber.Length - posDot );
             }
 
-            // Replaces the while *ChapterNumber = wxT("0") + *ChapterNumber
-            return ChapterNumber.PadLeft (
-                // This replaces the ChapterNumber.Length - chNumberResidualLength < 4
-                Math.Max ( 4 - ( ChapterNumber.Length + chNumberResidualLength ), 0 ),
-                '0'
-            );
+            while ( ChapterNumber.Length - chNumberResidualLength < 4 )
+            {
+                ChapterNumber = '0' + ChapterNumber;
+            }
+
+            return ChapterNumber;
         }
 
         public class ChapterFileProcessor : IDisposable

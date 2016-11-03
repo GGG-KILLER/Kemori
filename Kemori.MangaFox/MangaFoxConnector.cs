@@ -100,9 +100,10 @@ namespace Kemori.Connectors
         {
             var mangaList = new List<Manga> ( );
             Logger.Log ( "Starting to update the manga list of mangafox.me" );
+
             try
             {
-                var HTML = ( await HTTP.GetStringAsync ( "http://mangafox.me/manga/" ) );
+                var HTML = await HTTP.GetStringAsync ( "http://mangafox.me/manga/" );
                 var indexStart = HTML.IndexOfAfter ( "<div class=\"manga_list\">" );
                 var indexEnd = HTML.IndexOf ( "<div id=\"footer\">" );
 
@@ -113,14 +114,17 @@ namespace Kemori.Connectors
                     indexEnd = 0;
 
                     // Example Entry: <li><a href="http://mangafox.me/manga/name/" rel="8894" class="series_preview manga_open">Label</a></li>
-                    while ( ( indexStart = HTML.IndexOfAfter ( "<li><a href=\"", indexEnd ) ) > 12 )
+                    while ( ( indexStart = HTML.IndexOf ( "<li><a href=\"", indexEnd ) ) > -1 )
                     {
+                        indexStart += 13;
                         indexEnd = HTML.IndexOf ( '"', indexStart );
                         var mangaLink = HTML.Substring ( indexStart, indexEnd - indexStart );
 
-                        indexStart = HTML.IndexOfAfter ( '>', indexEnd );
+                        indexStart = HTML.IndexOf ( '>', indexEnd ) + 1;
                         indexEnd = HTML.IndexOf ( '<', indexStart );
-                        var mangaLabel = HTML.Substring ( indexStart, indexEnd - indexStart );
+                        var mangaLabel = HTML
+                            .Substring ( indexStart, indexEnd - indexStart )
+                            .Trim ( );
 
                         if ( mangaLabel != "" )
                         {
@@ -160,13 +164,16 @@ namespace Kemori.Connectors
 
             try
             {
+                String volumePrefix = String.Empty,
+                    chNumber,
+                    chTitle,
+                    chLink;
+
                 var HTML = await HTTP.GetStringAsync ( Manga.Link );
-                var indexStart = HTML.IndexOfAfter ( "</h2><hr/>" );
+                var indexStart = HTML.IndexOf ( "</h2><hr/>" ) + 10;
                 var indexEnd = HTML.IndexOf ( "<div id=\"discussion\"", indexStart );
                 var volumeIndexCurrent = 0;
                 var volumeIndexNext = 0;
-
-                String volumePrefix = String.Empty, chNumber, chTitle, chLink;
 
                 if ( indexStart > 9 && indexEnd >= -1 )
                 {
@@ -186,6 +193,7 @@ namespace Kemori.Connectors
                             volumeIndexNext = HTML.IndexOf ( '<', volumeIndexCurrent );
                             volumePrefix = HTML.Substring ( volumeIndexCurrent, volumeIndexNext - volumeIndexCurrent );
                             // go to next volume
+                            volumeIndexNext = HTML.IndexOf ( "<h3 class=\"volume\">", volumeIndexNext );
                         }
 
                         // Getting link of chapter
@@ -202,8 +210,8 @@ namespace Kemori.Connectors
                         chNumber = NormalizeChapterNumber ( chNumber );
 
                         // optional, some chapters don't have title <span>...
-                        indexStart = HTML.IndexOfAfter ( '>', indexEnd + 5 ); // ">"
-                        if ( HTML.Substring ( indexStart - 5, indexStart ) == "</h3>" )
+                        indexStart = HTML.IndexOf ( '>', indexEnd + 5 ) + 1; // ">"
+                        if ( HTML.Substring ( indexStart - 5, 5 ) == "</h3>" )
                         {
                             chTitle = String.Empty;
                         }
@@ -213,16 +221,16 @@ namespace Kemori.Connectors
                             chTitle = HTML.Substring ( indexStart, indexEnd - indexStart );
                         }
 
-                        chTitle = chTitle.Trim ( );
+                        chTitle = HttpUtility.HtmlDecode ( chTitle.Trim ( ) );
                         chLink = chLink.Trim ( );
-                        chNumber = chNumber.Trim ( );
+                        chNumber = HttpUtility.HtmlDecode ( chNumber.Trim ( ) );
 
                         // Personally don't like the "new" Hakuneko leaves in the chapter titles which causes to re-download when MangaFox decides that the chapter is now "old"
                         chTitle = chTitle == "new" ? String.Empty : chTitle;
 
                         chapterList.Add ( new MangaChapter
                         {
-                            Volume = volumePrefix,
+                            Volume = HttpUtility.HtmlDecode ( volumePrefix ),
                             Manga = Manga,
                             Chapter = chNumber,
                             Link = chLink,
@@ -254,13 +262,14 @@ namespace Kemori.Connectors
             {
                 var HTML = await HTTP.GetStringAsync ( Chapter.Link );
 
-                var indexStart = HTML.IndexOfAfter ( "<select onchange=\"change_page(this)\" class=\"m\">" );
+                var indexStart = HTML.IndexOf ( "<select onchange=\"change_page(this)\" class=\"m\">" ) + 48;
                 // ignore last option (comments -> value="0")
                 var indexEnd = HTML.IndexOf ( "<option value=\"0\"", indexStart );
 
                 if ( indexStart > 47 && indexEnd >= -1 )
                 {
                     HTML = HTML.Substring ( indexStart, indexEnd - indexStart );
+                    indexEnd = 0;
 
                     // Example Entry: <option value="1" selected="selected">1</option>
                     while ( ( indexStart = HTML.IndexOf ( "<option value=\"", indexEnd ) ) > -1 )
@@ -270,7 +279,7 @@ namespace Kemori.Connectors
 
                         pageLinks.Add (
                             await GetImageLinkAsync (
-                                HTML.Substring ( indexStart, indexEnd - indexStart )
+                                Chapter.Link.BeforeLast ( '/' ) + '/' + HTML.Substring ( indexStart, indexEnd - indexStart ) + ".html"
                             )
                         );
                     }
@@ -296,14 +305,19 @@ namespace Kemori.Connectors
             try
             {
                 var HTML = await HTTP.GetStringAsync ( pageLink );
+
                 // Example Entry: <img src="http://c.mfcdn.net/store/manga/10235/01-001.0/compressed/pimg001.jpg" onerror="this.src='http://l.mfcdn.net/store/manga/10235/01-001.0/compressed/pimg001.jpg'" width="728" id="image" alt="Tenshin Ranman: Lucky or Unlucky!? 1: Unlucky Nature &amp;amp; Kiss at MangaFox.me"/>
                 // use the onerror-server instead the src-server (to save bandwith for web-browsing users which will read from src-server)
-                var indexStart = HTML.IndexOfAfter ( "this.src='" );
+                var indexStart = HTML.IndexOf ( "this.src='" ) + 10;
                 var indexEnd = HTML.IndexOf ( '\'', indexStart );
 
                 if ( indexStart > 9 && indexEnd >= -1 )
                 {
                     return HTML.Substring ( indexStart, indexEnd - indexStart );
+                }
+                else
+                {
+                    return String.Empty;
                 }
             }
             catch ( Exception e )

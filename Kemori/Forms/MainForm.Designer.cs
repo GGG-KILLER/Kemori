@@ -194,6 +194,7 @@ namespace Kemori.Forms
             this.dlButton.TabIndex = 12;
             this.dlButton.Text = "Download";
             this.dlButton.UseVisualStyleBackColor = true;
+            this.dlButton.Click += new System.EventHandler(this.dlButton_Click);
             // 
             // btnBookmark
             // 
@@ -261,13 +262,15 @@ namespace Kemori.Forms
             this.chList.LabelWrap = false;
             this.chList.Location = new System.Drawing.Point(306, 82);
             this.chList.MinimumSize = new System.Drawing.Size(292, 199);
+            this.chList.MultiSelect = false;
             this.chList.Name = "chList";
             this.chList.ShowGroups = false;
             this.chList.Size = new System.Drawing.Size(292, 199);
             this.chList.TabIndex = 18;
             this.chList.TabStop = false;
             this.chList.UseCompatibleStateImageBehavior = false;
-            this.chList.View = System.Windows.Forms.View.List;
+            this.chList.View = System.Windows.Forms.View.Details;
+            this.chList.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.chList_ItemChecked);
             this.chList.Resize += new System.EventHandler(this.chList_Resize);
             // 
             // dgvJobs

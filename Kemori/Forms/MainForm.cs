@@ -34,6 +34,8 @@ namespace Kemori.Forms
 {
     public partial class MainForm : Form
     {
+        #region Fields
+
         /// <summary>
         /// The <see cref="MangaConnector"/> list
         /// </summary>
@@ -69,18 +71,44 @@ namespace Kemori.Forms
         /// </summary>
         private readonly Logger Logger;
 
-        Int32 chListInitialX,
-              mangaListInitialWidth,
-              chListInitialWidth;
+        /// <summary>
+        /// Initial width of the chapter list
+        /// </summary>
+        private readonly Int32 chListInitialWidth;
+
+        /// <summary>
+        /// The initial list of the manga list
+        /// </summary>
+        private readonly Int32 mangaListInitialWidth;
+
+        /// <summary>
+        /// Initial X position of the chapter list
+        /// </summary>
+        private readonly Int32 chListInitialX;
+
+        /// <summary>
+        /// Timer used for search process (so we don't search on every keystroke)
+        /// </summary>
+        private readonly Timer searchTimer;
+
+        #endregion Fields
 
         public MainForm ( )
         {
             InitializeComponent ( );
             Logger = new Logger ( );
+            searchTimer = new Timer ( );
+            searchTimer.Interval = 250;
+            searchTimer.Tick += SearchTimer_Tick;
 
             chListInitialX = chList.Location.X;
             mangaListInitialWidth = mangaList.Width;
             chListInitialWidth = chList.Width;
+        }
+
+        private void ConfigsManager_SavePathChanged ( Object sender, System.ComponentModel.PropertyChangedEventArgs e )
+        {
+            dlPathTextbox.Text = ConfigsManager.SavePath;
         }
 
         #region Event listeners
@@ -130,8 +158,11 @@ namespace Kemori.Forms
 
             chList_Resize ( null, null );
 
+            dlPathTextbox.Text = ConfigsManager.SavePath;
+            ConfigsManager.SavePathChanged += ConfigsManager_SavePathChanged;
+
             SetUIEnabledState ( true );
-            //ssLoadProgress.Visible = false;
+            ssLoadProgress.Visible = false;
         }
 
         /// <summary>
@@ -196,7 +227,7 @@ namespace Kemori.Forms
         private void chapterSelectAll_CheckedChanged ( Object sender, EventArgs e )
         {
             for ( var i = 0 ; i < chList.Items.Count ; i++ )
-                chList.Items[i].Selected = chapterSelectAll.Checked;
+                chList.Items[i].Checked = chapterSelectAll.Checked;
         }
 
         /// <summary>
@@ -206,8 +237,15 @@ namespace Kemori.Forms
         /// <param name="e"></param>
         private void cbSearch_TextChanged ( Object sender, EventArgs e )
         {
+            searchTimer.Stop ( );
+            searchTimer.Start ( );
+        }
+
+        private void SearchTimer_Tick ( Object sender, EventArgs e )
+        {
             UpdateMangaListUI ( );
             UpdateBookmarkButton ( );
+            searchTimer.Stop ( );
         }
 
         /// <summary>
@@ -217,14 +255,22 @@ namespace Kemori.Forms
         /// <param name="e"></param>
         private void cbConnectors_SelectedIndexChanged ( Object sender, EventArgs e )
         {
+            SetUIEnabledState ( false );
             CurrentConnector = cbConnectors.SelectedIndex;
+            UpdateMangaListUI ( );
+            SetUIEnabledState ( true );
         }
 
         private async void mangaList_SelectedIndexChangedAsync ( Object sender, EventArgs e )
         {
+            if ( mangaList.Items.Count < 1 )
+                return;
+
             CurrentManga = mangaList.SelectedIndex;
             await UpdateChapterListUIAsync ( );
         }
+
+        #region Bookmark Button Handler
 
         /// <summary>
         /// Manages bookmark saving-unsaving
@@ -270,7 +316,119 @@ namespace Kemori.Forms
             await ConfigsManager.SaveAsync ( );
         }
 
+        #endregion Bookmark Button Handler
+
+        #region Update All Cache List
+
+        /// <summary>
+        /// "Update All" Button Click handler: Updates all local manga list
+        /// caches after user confirmation
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void updateAllBtn_ClickAsync ( Object sender, EventArgs e )
+        {
+            var ret = MessageBox.Show ( this, "This operation can take from 5 minutes to *a lot*, are you sure you want to do this?", "Kemori - Are you sure?", MessageBoxButtons.OKCancel );
+            if ( ret != DialogResult.OK )
+                return;
+
+            SetUIEnabledState ( false );
+            ssLoadProgress.Visible = true;
+
+            ssLoadProgressSet ( 0, "Updating local manga lists" );
+
+            for ( var i = 0 ; i < ConnectorCollection.Length ; i++ )
+            {
+                await ConnectorCollection[i].UpdateMangaListCacheAsync ( );
+                ssLoadProgressSet (
+                    Number.GetPercentage ( i, ConnectorCollection.Length ),
+                    "Updating local manga lists"
+                );
+            }
+
+            UpdateMangaListUI ( );
+
+            ssLoadProgressSet ( 100, "Local manga lists updated" );
+
+            ssLoadProgress.Visible = false;
+            SetUIEnabledState ( true );
+        }
+
+        #endregion Update All Cache List
+
+        #region Chapter List Item Checked Handling
+
+        private void chList_ItemChecked ( Object sender, ItemCheckedEventArgs e )
+        {
+            var exists = JobExists ( MangaCollection[CurrentManga].Name, e.Item.Text );
+
+            if ( exists && !e.Item.Checked )
+            {
+                RemoveJob ( MangaCollection[CurrentManga].Name, e.Item.Text );
+            }
+            else if ( !exists && e.Item.Checked )
+            {
+                AddJob ( MangaCollection[CurrentManga].Name, e.Item.Text );
+            }
+        }
+
+        private void RemoveJob ( String Manga, String Chapter )
+        {
+            foreach ( DataGridViewRow row in dgvJobs.Rows )
+            {
+                if ( row.Cells[0].Value.ToString ( ) == Manga && row.Cells[1].Value.ToString ( ) == Chapter )
+                {
+                    dgvJobs.Rows.Remove ( row );
+                    return;
+                }
+            }
+        }
+
+        private void AddJob ( String Manga, String Chapter )
+        {
+            if ( JobExists ( Manga, Chapter ) )
+                return;
+
+            dgvJobs.Rows.Add ( new Object[] { Manga, Chapter, 0 } );
+        }
+
+        private Boolean JobExists ( String Manga, String Chapter )
+        {
+            foreach ( DataGridViewRow row in dgvJobs.Rows )
+            {
+                if ( row.Cells[0].Value.ToString ( ) == Manga && row.Cells[1].Value.ToString ( ) == Chapter )
+                    return true;
+            }
+
+            return false;
+        }
+
+        #endregion Chapter List Item Checked Handling
+
+        #region Resizing Handlers
+
+        private void chList_Resize ( Object sender, EventArgs e )
+        {
+            chNameHeader.Width = chList.Width - 2;
+        }
+
+        private void MainForm_Resize ( Object sender, EventArgs e )
+        {
+            var proportion = ( ( Double ) this.Width ) / ( ( Double ) this.MinimumSize.Width );
+
+            chList.Location = new Point ( ( Int32 ) Math.Floor ( chListInitialX * proportion ), chList.Location.Y );
+            chapterSelectAll.Location = new Point ( chList.Location.X, chapterSelectAll.Location.Y );
+
+            chList.Width = ( Int32 ) Math.Floor ( chListInitialWidth * proportion );
+
+            mangaList.Width = ( Int32 ) Math.Ceiling ( mangaListInitialWidth * proportion );
+        }
+
+        #endregion Resizing Handlers
+
         #endregion Event listeners
+
+        #region Save Path Requester
 
         /// <summary>
         /// Forces the user to enter a save path
@@ -292,6 +450,10 @@ namespace Kemori.Forms
 
             ConfigsManager.SavePath = fsd.FileName;
         }
+
+        #endregion Save Path Requester
+
+        #region Connector Loader
 
         /// <summary>
         /// Loads all connectors into the UI and Form
@@ -327,6 +489,8 @@ namespace Kemori.Forms
               } );
         }
 
+        #endregion Connector Loader
+
         /// <summary>
         /// Changes the ToolStrip control values thread-safely
         /// </summary>
@@ -343,6 +507,8 @@ namespace Kemori.Forms
                     .Text = Task;
             } );
         }
+
+        #region Bookmark Connector Finder
 
         /// <summary>
         /// Returns a <see cref="MangaConnector"/> associated to a <see cref="Bookmark"/>
@@ -375,6 +541,10 @@ namespace Kemori.Forms
             // Return the connector otherwise
             return conn;
         }
+
+        #endregion Bookmark Connector Finder
+
+        #region Search Term Retriever
 
         /// <summary>
         /// Returns the appropriate search term entered by the user
@@ -415,6 +585,10 @@ namespace Kemori.Forms
             return searchterm;
         }
 
+        #endregion Search Term Retriever
+
+        #region UI Updaters
+
         /// <summary>
         /// Updated the manga list so it contains the chapters of the selected connector
         /// </summary>
@@ -423,9 +597,6 @@ namespace Kemori.Forms
             mangaList.Items.Clear ( );
 
             var term = GetSearchTerm ( );
-#if DEBUG
-            Console.WriteLine ( $"{ConnectorCollection.Length} | {CurrentConnector}" );
-#endif
             var conn = ConnectorCollection[CurrentConnector];
 
             MangaCollection = conn.MangaList;
@@ -439,6 +610,9 @@ namespace Kemori.Forms
 
             foreach ( var manga in MangaCollection )
                 mangaList.Items.Add ( manga );
+
+            if ( mangaList.Items.Count > 0 )
+                mangaList.SelectedIndex = 0;
         }
 
         /// <summary>
@@ -469,6 +643,8 @@ namespace Kemori.Forms
             btnBookmark.Text = SearchIsBookmark ? "-" : "+";
         }
 
+        #endregion UI Updaters
+
         /// <summary>
         /// Sets the "Enabled" state of all controls in the form
         /// </summary>
@@ -481,47 +657,23 @@ namespace Kemori.Forms
                 chList.Enabled = dlButton.Enabled = state;
         }
 
-        private async void updateAllBtn_ClickAsync ( Object sender, EventArgs e )
+        private void dlButton_Click ( Object sender, EventArgs e )
         {
-            var ret = MessageBox.Show ( this, "This operation can take from 5 minutes to *a lot*, are you sure you want to do this?", "Kemori - Are you sure?", MessageBoxButtons.OKCancel );
-            if ( ret != DialogResult.OK )
+            if ( dgvJobs.Rows.Count < 1 )
                 return;
 
-            SetUIEnabledState ( false );
-            ssLoadProgress.Visible = true;
 
-            ssLoadProgressSet ( 0, "Updating local manga lists" );
+        }
 
-            for ( var i = 0 ; i < ConnectorCollection.Length ; i++ )
+        private MangaChapter GetByName ( String Name )
+        {
+            foreach ( var chapter in MangaChapterCollection )
             {
-                await ConnectorCollection[i].UpdateMangaListCacheAsync ( );
-                ssLoadProgressSet (
-                    Number.GetPercentage ( i, ConnectorCollection.Length ),
-                    "Updating local manga lists"
-                );
+                if ( chapter.ToString ( ) == Name )
+                    return chapter;
             }
 
-            ssLoadProgressSet ( 100, "Local manga lists updated" );
-
-            ssLoadProgress.Visible = false;
-            SetUIEnabledState ( true );
-        }
-
-        private void chList_Resize ( Object sender, EventArgs e )
-        {
-            chNameHeader.Width = chList.Width - 2;
-        }
-
-        private void MainForm_Resize ( Object sender, EventArgs e )
-        {
-            var proportion = ( ( Double ) this.Width ) / ( ( Double ) this.MinimumSize.Width );
-
-            chList.Location = new Point ( ( Int32 ) Math.Floor ( chListInitialX * proportion ), chList.Location.Y );
-            chapterSelectAll.Location = new Point ( chList.Location.X, chapterSelectAll.Location.Y );
-
-            chList.Width = ( Int32 ) Math.Floor ( chListInitialWidth * proportion );
-
-            mangaList.Width = ( Int32 ) Math.Ceiling ( mangaListInitialWidth * proportion );
+            return null;
         }
     }
 }

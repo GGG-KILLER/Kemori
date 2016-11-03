@@ -153,6 +153,9 @@ namespace Kemori.Resources
             try
             {
                 Config = await SerializerUtils.DeserializeFromFileAsync<Configs> ( ConfigPath );
+
+                if ( Config == null )
+                    Config = new Configs ( );
             }
             catch ( Exception )
             {

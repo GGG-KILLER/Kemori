@@ -29,14 +29,14 @@ using Kemori.Utils;
 
 namespace Kemori.Base
 {
-    public class MangaConnector : IMangaConnector
+    public abstract class MangaConnector : IMangaConnector
     {
         public Logger Logger;
 
         /// <summary>
-        /// Base manga connector (do not instance this)
+        /// Base manga connector
         /// </summary>
-        public MangaConnector ( )
+        protected MangaConnector ( )
         {
             InitHTTP ( );
             InitIO ( );
@@ -125,55 +125,36 @@ namespace Kemori.Base
                 HTTP.Dispose ( );
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-
         /// <summary>
         /// Gets all page images links for a given chapter
         /// </summary>
         /// <param name="Chapter">The chapter</param>
         /// <returns></returns>
-        public virtual async Task<String[]> GetPageLinksAsync ( MangaChapter Chapter )
-        {
-            throw new NotImplementedException ( );
-        }
+        public abstract Task<String[]> GetPageLinksAsync ( MangaChapter Chapter );
 
         /// <summary>
         /// Downloads a chapter from a manga
         /// </summary>
         /// <param name="Chapter">The chapter to download</param>
-        public virtual async Task DownloadChapterAsync ( MangaChapter Chapter )
-        {
-            throw new NotImplementedException ( );
-        }
+        public abstract Task DownloadChapterAsync ( MangaChapter Chapter );
 
         /// <summary>
         /// Returns all chapters from a manga
         /// </summary>
         /// <param name="Manga">The manga to get the chapters from</param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<MangaChapter>> GetChaptersAsync ( Manga Manga )
-        {
-            throw new NotImplementedException ( );
-        }
+        public abstract Task<IEnumerable<MangaChapter>> GetChaptersAsync ( Manga Manga );
 
         /// <summary>
         /// Loads all mangas
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<Manga>> UpdateMangaListAsync ( )
-        {
-            throw new NotImplementedException ( );
-        }
-
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        public abstract Task<IEnumerable<Manga>> UpdateMangaListAsync ( );
 
         /// <summary>
         /// Should be overriden to initialize the HTTP client properly
         /// </summary>
-        public virtual void InitHTTP ( )
-        {
-            HTTP = new Fetch ( );
-        }
+        public abstract void InitHTTP ( );
 
         // Shamefully copied from hakuneko (few modifications):
         /// <summary>
@@ -262,6 +243,8 @@ namespace Kemori.Base
             return ChapterNumber;
         }
 
+        #region FS Processor
+
         public class ChapterFileProcessor : IDisposable
         {
             private readonly String root;
@@ -314,6 +297,8 @@ namespace Kemori.Base
                 GC.SuppressFinalize ( this );
             }
         }
+
+        #endregion FS Processor
 
         /// <summary>
         /// Saves all bytes to the file according to the user's settings (compression, etc.)
@@ -382,7 +367,7 @@ namespace Kemori.Base
         }
 
         /// <summary>
-        /// Returns the <see cref="MangaConnector"/> <see cref="String"/> representation
+        /// Returns the <see cref="MangaConnector"/>'s <see cref="String"/> representation
         /// </summary>
         /// <returns></returns>
         public override String ToString ( )

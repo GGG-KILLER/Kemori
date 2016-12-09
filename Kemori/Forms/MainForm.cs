@@ -244,7 +244,7 @@ namespace Kemori.Forms
         private void SearchTimer_Tick ( Object sender, EventArgs e )
         {
             UpdateMangaListUI ( );
-            UpdateBookmarkButton ( );
+            UpdateBookmarkUI ( );
             searchTimer.Stop ( );
         }
 
@@ -287,7 +287,7 @@ namespace Kemori.Forms
             var book = new Bookmark
             {
                 ConnectorWebsite = ConnectorCollection[CurrentConnector].Website,
-                MangaName = term
+                SearchTerm = term
             };
 
             if ( !SearchIsBookmark )
@@ -295,7 +295,7 @@ namespace Kemori.Forms
                 if ( books.IndexOf ( book ) > -1 )
                 {
                     SearchIsBookmark = true;
-                    UpdateBookmarkButton ( );
+                    UpdateBookmarkUI ( );
                     btnBookmark_ClickAsync ( sender, e );
                     return;
                 }
@@ -306,7 +306,7 @@ namespace Kemori.Forms
                 if ( books.IndexOf ( book ) < 0 )
                 {
                     SearchIsBookmark = false;
-                    UpdateBookmarkButton ( );
+                    UpdateBookmarkUI ( );
                     btnBookmark_ClickAsync ( sender, e );
                     return;
                 }
@@ -508,15 +508,15 @@ namespace Kemori.Forms
             } );
         }
 
-        #region Bookmark Connector Finder
+        #region Bookmarks Management
 
         /// <summary>
         /// Returns a <see cref="MangaConnector"/> associated to a <see cref="Bookmark"/>
         /// </summary>
-        /// <param name="MangaName">Name of the manga</param>
+        /// <param name="SearchTerm">Name of the manga</param>
         /// <param name="ConnectorWebsite">Website of the connector</param>
         /// <returns></returns>
-        private MangaConnector FindBookmarkConnector ( String MangaName, String ConnectorWebsite )
+        private MangaConnector FindBookmarkConnector ( String SearchTerm, String ConnectorWebsite )
         {
             // Get the connector for the bookmark website
             var conn = ConnectorCollection.FirstOrDefault ( con => con.Website == ConnectorWebsite );
@@ -531,7 +531,7 @@ namespace Kemori.Forms
                     // Check for identical website
                     fav => fav.ConnectorWebsite == conn.Website &&
                     // Check for identical manga name
-                    conn.MangaList.FirstOrDefault ( m => m.Name == MangaName ) != null
+                    conn.MangaList.FirstOrDefault ( m => m.Name.Contains ( SearchTerm ) ) != null
                 );
 
             // Give up if it doesn't
@@ -542,7 +542,7 @@ namespace Kemori.Forms
             return conn;
         }
 
-        #endregion Bookmark Connector Finder
+        #endregion Bookmarks Management
 
         #region Search Term Retriever
 
@@ -567,6 +567,9 @@ namespace Kemori.Forms
                 if ( conn != null )
                 {
                     var index = cbConnectors.Items.IndexOf ( conn.Website );
+                    if ( index > -1 )
+                    {
+                    }
                     cbConnectors.SelectedIndex = index;
                     CurrentConnector = index;
                     SearchIsBookmark = true;
@@ -631,16 +634,21 @@ namespace Kemori.Forms
             foreach ( var chapter in MangaChapterCollection )
             {
                 var i = chList.Items.Add ( chapter.ToString ( ) );
-                i.ForeColor = chapter.IsDownloaded ? Color.BlueViolet : Color.Black;
+                i.ForeColor = chapter.IsDownloaded ? Color.LightBlue : Color.Black;
             }
         }
 
         /// <summary>
         /// Manages the updating of the bookmark button text
         /// </summary>
-        private void UpdateBookmarkButton ( )
+        private void UpdateBookmarkUI ( )
         {
             btnBookmark.Text = SearchIsBookmark ? "-" : "+";
+
+            foreach ( var book in ConfigsManager.Bookmarks )
+            {
+                cbSearch.Items.Add ( $"{book.SearchTerm}<{book.ConnectorWebsite}>" );
+            }
         }
 
         #endregion UI Updaters
@@ -657,15 +665,31 @@ namespace Kemori.Forms
                 chList.Enabled = dlButton.Enabled = state;
         }
 
-        private void dlButton_Click ( Object sender, EventArgs e )
+        #region Download Management
+
+        private async void dlButton_Click ( Object sender, EventArgs e )
         {
             if ( dgvJobs.Rows.Count < 1 )
                 return;
 
+            foreach ( DataGridViewRow row in dgvJobs.Rows )
+            {
+                var chapterName = row.Cells[1].Value.ToString ( );
+                var chapter = GetChapterByName ( chapterName );
+
+                chapter.Manga.Connector.MangaDownloadProgressChanged += Connector_MangaDownloadProgressChanged;
+                await chapter.Manga.Connector.DownloadChapterAsync ( chapter );
+            }
+        }
+
+        private void Connector_MangaDownloadProgressChanged ( MangaConnector sender, System.Net.DownloadProgressChangedEventArgs e )
+        {
 
         }
 
-        private MangaChapter GetByName ( String Name )
+        #endregion Download Management
+
+        private MangaChapter GetChapterByName ( String Name )
         {
             foreach ( var chapter in MangaChapterCollection )
             {

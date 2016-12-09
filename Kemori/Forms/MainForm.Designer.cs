@@ -222,7 +222,7 @@ namespace Kemori.Forms
             this.ssLoadProgress.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblLoadProgress,
             this.pbLoadPorgress});
-            this.ssLoadProgress.Location = new System.Drawing.Point(0, 289);
+            this.ssLoadProgress.Location = new System.Drawing.Point(0, 526);
             this.ssLoadProgress.Name = "ssLoadProgress";
             this.ssLoadProgress.Size = new System.Drawing.Size(610, 22);
             this.ssLoadProgress.TabIndex = 15;

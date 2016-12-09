@@ -24,6 +24,6 @@ namespace Kemori.Base
     internal class Bookmark
     {
         public String ConnectorWebsite;
-        public String MangaName;
+        public String SearchTerm;
     }
 }

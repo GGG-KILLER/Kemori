@@ -17,7 +17,7 @@
  */
 
 using System;
-using Kemori.Interfaces;
+using Kemori.Abstractions;
 
 namespace Kemori.Base
 {

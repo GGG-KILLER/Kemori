@@ -19,7 +19,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Kemori.Interfaces;
+using Kemori.Abstractions;
 
 namespace Kemori.Base
 {

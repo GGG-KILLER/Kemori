@@ -19,43 +19,37 @@
 using System;
 using Kemori.Base;
 
-namespace Kemori.Interfaces
+namespace Kemori.Abstractions
 {
     /// <summary>
-    /// Manga chapter interface
+    /// Manga interface
     /// </summary>
-    public interface IMangaChapter
+    public interface IManga
     {
         /// <summary>
-        /// The manga it belongs to
-        /// </summary>
-        Manga Manga { get; }
-
-        /// <summary>
-        /// The link to the chapter (usually first page)
-        /// </summary>
-        String Link { get; }
-
-        /// <summary>
-        /// The amount of pages the chapter has
-        /// </summary>
-        Int32 Pages { get; }
-
-        /// <summary>
-        /// Name of the chapter (if existent)
+        /// Name of the manga
         /// </summary>
         String Name { get; }
 
         /// <summary>
-        /// Number of the chapter (1, 1.5, etc.)
-        /// If not available use sequential numbering or the index on the chapter array.
+        /// Connector used with the manga
         /// </summary>
-        String Chapter { get; }
+        MangaConnector Connector { get; }
 
         /// <summary>
-        /// The links of the pages
+        /// Chapter list
         /// </summary>
-        String[] PageLinks { get; }
+        MangaChapter[] Chapters { get; }
+
+        /// <summary>
+        /// Downloaded path (if existent)
+        /// </summary>
+        String Path { get; }
+
+        /// <summary>
+        /// Link to the manga
+        /// </summary>
+        String Link { get; }
 
         /// <summary>
         /// Instance hash
@@ -63,12 +57,12 @@ namespace Kemori.Interfaces
         String InstanceID { get; }
 
         /// <summary>
-        /// Loads the information about the chapter (page count and page links)
+        /// Loads the information about the manga
         /// </summary>
-        void Load ( );
+        System.Threading.Tasks.Task LoadAsync ( );
 
         /// <summary>
-        /// Recalculates the instance ID for this chapter
+        /// Recalculates the hash for this manga
         /// </summary>
         void ReCalcInstanceID ( );
     }

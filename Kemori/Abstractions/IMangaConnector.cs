@@ -21,14 +21,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Kemori.Base;
 
-namespace Kemori.Interfaces
+namespace Kemori.Abstractions
 {
     /// <summary>
     /// Defined the handler that will receive the progress of the manga downloader
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    public delegate void MangaDownloadProgressChangedHandler ( MangaConnector sender, System.Net.DownloadProgressChangedEventArgs e );
+    public delegate void MangaDownloadProgressChangedHandler ( MangaConnector sender, MangaChapter chapter, System.Net.DownloadProgressChangedEventArgs e );
 
     /// <summary>
     /// Provides the base for creating a manga connector

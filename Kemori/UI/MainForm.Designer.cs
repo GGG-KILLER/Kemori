@@ -68,7 +68,7 @@ namespace Kemori.Forms
             this.dgvJobs = new System.Windows.Forms.DataGridView();
             this.Manga = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Chapter = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Progress = new GUtils.Forms.DataGridView.DataGridViewProgressColumn();
+            this.Progress = new GUtils.UI.Components.DataGridView.DataGridViewProgressColumn();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -368,6 +368,6 @@ namespace Kemori.Forms
         private System.Windows.Forms.ColumnHeader chNameHeader;
         private System.Windows.Forms.DataGridViewTextBoxColumn Manga;
         private System.Windows.Forms.DataGridViewTextBoxColumn Chapter;
-        private GUtils.Forms.DataGridView.DataGridViewProgressColumn Progress;
+        private GUtils.UI.Components.DataGridView.DataGridViewProgressColumn Progress;
     }
 }

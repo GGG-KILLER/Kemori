@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace GUtils.Forms.DataGridView
+namespace GUtils.UI.Components.DataGridView
 {
     using System;
     using System.ComponentModel;

@@ -23,7 +23,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Ionic.Zip;
 using Kemori.Classes;
-using Kemori.Interfaces;
+using Kemori.Abstractions;
 using Kemori.Resources;
 using Kemori.Utils;
 
@@ -67,7 +67,6 @@ namespace Kemori.Base
         /// <summary>
         /// The UNIQUE ID of this connector (can only be set once)
         /// </summary>
-        ///
         public String ID
         {
             get
@@ -114,7 +113,7 @@ namespace Kemori.Base
         /// <summary>
         /// Called when the download makes progress
         /// </summary>
-        public virtual event MangaDownloadProgressChangedHandler MangaDownloadProgressChanged;
+        public event MangaDownloadProgressChangedHandler MangaDownloadProgressChanged;
 
         /// <summary>
         /// Essential to call to get rid of the HTTP client
@@ -125,18 +124,65 @@ namespace Kemori.Base
                 HTTP.Dispose ( );
         }
 
+        #region Chapter Downloading
+
+        MangaChapter CurrentDownloadingChapter;
+
+        /// <summary>
+        /// Downloads a certain chapter
+        /// </summary>
+        /// <param name="Chapter">Chapter to download</param>
+        public async Task DownloadChapterAsync ( MangaChapter Chapter )
+        {
+            // Loads all pages images and page count
+            Chapter.Load ( );
+
+            HTTP.DownloadProgressChanged += HTTP_DownloadProgressChanged;
+
+            CurrentDownloadingChapter = Chapter;
+            
+            // Creates a ChapterFileProcessor
+            using ( var pageProcessor = GetFileProcessor ( Chapter ) )
+            {
+                // Loops through all pages
+                for ( var i = 0 ; i < Chapter.Pages ; i++ )
+                {
+                    var page = Chapter.PageLinks[i];
+
+                    // Saves the file bytes
+                    await pageProcessor.SaveFileAsync (
+                        // 00X.ext file formats
+                        i.ToString ( ).PadLeft ( 3, '0' ) + Path.GetExtension ( page ),
+                        // Downloads the bytes from the image
+                        await HTTP.GetDataAsync ( page )
+                    );
+                }
+            }
+
+            CurrentDownloadingChapter = null;
+
+            HTTP.DownloadProgressChanged -= HTTP_DownloadProgressChanged;
+        }
+
+        /// <summary>
+        /// Pipes the progresschanged event from the <see cref="Classes.Fetch"/> event to ours
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HTTP_DownloadProgressChanged ( Object sender, System.Net.DownloadProgressChangedEventArgs e )
+        {
+            this.MangaDownloadProgressChanged?.Invoke ( this,
+                CurrentDownloadingChapter, e );
+        }
+
+        #endregion Chapter Downloading
+
         /// <summary>
         /// Gets all page images links for a given chapter
         /// </summary>
         /// <param name="Chapter">The chapter</param>
         /// <returns></returns>
         public abstract Task<String[]> GetPageLinksAsync ( MangaChapter Chapter );
-
-        /// <summary>
-        /// Downloads a chapter from a manga
-        /// </summary>
-        /// <param name="Chapter">The chapter to download</param>
-        public abstract Task DownloadChapterAsync ( MangaChapter Chapter );
 
         /// <summary>
         /// Returns all chapters from a manga
@@ -158,8 +204,7 @@ namespace Kemori.Base
 
         // Shamefully copied from hakuneko (few modifications):
         /// <summary>
-        /// Normalizes chapter numbers so they all follow the same style
-        /// inside the application
+        /// Normalizes chapter numbers so they all follow the same style inside the application
         /// </summary>
         /// <param name="ChapterNumber">The string that contains the chapter number</param>
         /// <returns></returns>
@@ -190,7 +235,8 @@ namespace Kemori.Base
             var posLastSpace = ChapterNumber.LastIndexOf ( ' ' ); // Sometimes chapter numbers are preceded by text
             if ( posFirstSpace > -1 && posLastSpace > -1 )
             {
-                // NOTE: in case numbers are at beginning and ending, the number at beginning got higher priority
+                // NOTE: in case numbers are at beginning and ending, the number at beginning got
+                //       higher priority
                 if ( Is.Number ( ChapterNumber.Substring ( 0, posFirstSpace ) ) )
                 {
                     ChapterNumber = ChapterNumber.Substring ( 0, posFirstSpace );
@@ -311,7 +357,7 @@ namespace Kemori.Base
 
         public FileInfo GetMangaListInfo ( )
         {
-            var fi = new FileInfo ( PathUtils.GetPathForFile ( $"lists/{ID}.list" ) );
+            var fi = new FileInfo ( PathUtils.GetProgramDataPath ( $"lists/{ID}.list" ) );
             fi.Directory.Create ( );
             if ( !fi.Exists )
                 fi.Create ( );

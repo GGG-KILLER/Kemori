@@ -20,7 +20,7 @@ using System;
 using System.Reflection;
 using System.Windows.Forms;
 
-namespace GUtils.Forms
+namespace GUtils.UI.Dialogs
 {
     // Souce: http://www.lyquidity.com/devblog/?p=136
     // As stated in the website: "There’s no license as such as you are free to take and do with the code what you will." (tl;dr: this class is not under GLP-3)
@@ -54,7 +54,7 @@ namespace GUtils.Forms
         /// <summary>
         /// Gets/Sets the initial folder to be selected. A null value selects the current directory.
         /// </summary>
-        public string InitialDirectory
+        public String InitialDirectory
         {
             get { return ofd.InitialDirectory; }
             set { ofd.InitialDirectory = value == null || value.Length == 0 ? Environment.CurrentDirectory : value; }
@@ -63,7 +63,7 @@ namespace GUtils.Forms
         /// <summary>
         /// Gets/Sets the title to show in the dialog
         /// </summary>
-        public string Title
+        public String Title
         {
             get { return ofd.Title; }
             set { ofd.Title = value == null ? "Select a folder" : value; }
@@ -72,7 +72,7 @@ namespace GUtils.Forms
         /// <summary>
         /// Gets the selected folder
         /// </summary>
-        public string FileName
+        public String FileName
         {
             get { return ofd.FileName; }
         }
@@ -85,7 +85,7 @@ namespace GUtils.Forms
         /// Shows the dialog
         /// </summary>
         /// <returns>True if the user presses OK else false</returns>
-        public bool ShowDialog ( )
+        public Boolean ShowDialog ( )
         {
             return ShowDialog ( IntPtr.Zero );
         }
@@ -95,7 +95,7 @@ namespace GUtils.Forms
         /// </summary>
         /// <param name="hWndOwner">Handle of the control to be parent</param>
         /// <returns>True if the user presses OK else false</returns>
-        public bool ShowDialog ( IntPtr hWndOwner )
+        public Boolean ShowDialog ( IntPtr hWndOwner )
         {
             var flag = false;
 
@@ -108,17 +108,17 @@ namespace GUtils.Forms
                 var dialog = Reflector.Call ( ofd, "CreateVistaDialog" );
                 Reflector.Call ( ofd, "OnBeforeVistaDialog", dialog );
 
-                var options = ( uint ) Reflector.CallAs ( typeof ( FileDialog ), ofd, "GetOptions" );
-                options |= ( uint ) r.GetEnum ( "FileDialogNative.FOS", "FOS_PICKFOLDERS" );
+                var options = ( UInt32 ) Reflector.CallAs ( typeof ( FileDialog ), ofd, "GetOptions" );
+                options |= ( UInt32 ) r.GetEnum ( "FileDialogNative.FOS", "FOS_PICKFOLDERS" );
                 Reflector.CallAs ( typeIFileDialog, dialog, "SetOptions", options );
 
                 var pfde = r.New ( "FileDialog.VistaDialogEvents", ofd );
-                var parameters = new object[] { pfde, num };
+                var parameters = new Object[] { pfde, num };
                 Reflector.CallAs2 ( typeIFileDialog, dialog, "Advise", parameters );
-                num = ( uint ) parameters[1];
+                num = ( UInt32 ) parameters[1];
                 try
                 {
-                    var num2 = ( int ) Reflector.CallAs ( typeIFileDialog, dialog, "Show", hWndOwner );
+                    var num2 = ( Int32 ) Reflector.CallAs ( typeIFileDialog, dialog, "Show", hWndOwner );
                     flag = 0 == num2;
                 }
                 finally
@@ -197,7 +197,7 @@ namespace GUtils.Forms
         /// Constructor
         /// </summary>
         /// <param name="ns">The namespace containing types to be used</param>
-        public Reflector ( string ns )
+        public Reflector ( String ns )
             : this ( ns, ns )
         { }
 
@@ -237,7 +237,7 @@ namespace GUtils.Forms
             if ( names.Length > 0 )
                 type = m_asmb.GetType ( m_ns + "." + names[0] );
 
-            for ( int i = 1 ; i < names.Length ; ++i )
+            for ( Int32 i = 1 ; i < names.Length ; ++i )
             {
                 type = type.GetNestedType ( names[i], BindingFlags.NonPublic );
             }

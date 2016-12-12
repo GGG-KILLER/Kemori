@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace GUtils.Forms.DataGridView
+namespace GUtils.UI.Components.DataGridView
 {
     // Source: https://social.msdn.microsoft.com/Forums/windows/en-US/769ca9d6-1e9d-4d76-8c23-db535b2f19c2/sample-code-datagridview-progress-bar-column?forum=winformsdatacontrols
     // This class is not made by me and all credit goes to it's original authors

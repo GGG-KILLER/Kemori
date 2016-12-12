@@ -19,37 +19,43 @@
 using System;
 using Kemori.Base;
 
-namespace Kemori.Interfaces
+namespace Kemori.Abstractions
 {
     /// <summary>
-    /// Manga interface
+    /// Manga chapter interface
     /// </summary>
-    public interface IManga
+    public interface IMangaChapter
     {
         /// <summary>
-        /// Name of the manga
+        /// The manga it belongs to
+        /// </summary>
+        Manga Manga { get; }
+
+        /// <summary>
+        /// The link to the chapter (usually first page)
+        /// </summary>
+        String Link { get; }
+
+        /// <summary>
+        /// The amount of pages the chapter has
+        /// </summary>
+        Int32 Pages { get; }
+
+        /// <summary>
+        /// Name of the chapter (if existent)
         /// </summary>
         String Name { get; }
 
         /// <summary>
-        /// Connector used with the manga
+        /// Number of the chapter (1, 1.5, etc.)
+        /// If not available use sequential numbering or the index on the chapter array.
         /// </summary>
-        MangaConnector Connector { get; }
+        String Chapter { get; }
 
         /// <summary>
-        /// Chapter list
+        /// The links of the pages
         /// </summary>
-        MangaChapter[] Chapters { get; }
-
-        /// <summary>
-        /// Downloaded path (if existent)
-        /// </summary>
-        String Path { get; }
-
-        /// <summary>
-        /// Link to the manga
-        /// </summary>
-        String Link { get; }
+        String[] PageLinks { get; }
 
         /// <summary>
         /// Instance hash
@@ -57,12 +63,12 @@ namespace Kemori.Interfaces
         String InstanceID { get; }
 
         /// <summary>
-        /// Loads the information about the manga
+        /// Loads the information about the chapter (page count and page links)
         /// </summary>
-        System.Threading.Tasks.Task LoadAsync ( );
+        void Load ( );
 
         /// <summary>
-        /// Recalculates the hash for this manga
+        /// Recalculates the instance ID for this chapter
         /// </summary>
         void ReCalcInstanceID ( );
     }

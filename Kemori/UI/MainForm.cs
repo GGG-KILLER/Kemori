@@ -23,7 +23,8 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using GUtils.Forms;
+using GUtils.UI;
+using GUtils.UI.Dialogs;
 using Kemori.Base;
 using Kemori.Controllers;
 using Kemori.Extensions;
@@ -97,8 +98,7 @@ namespace Kemori.Forms
         {
             InitializeComponent ( );
             Logger = new Logger ( );
-            searchTimer = new Timer ( );
-            searchTimer.Interval = 250;
+            searchTimer = new Timer { Interval = 250 };
             searchTimer.Tick += SearchTimer_Tick;
 
             chListInitialX = chList.Location.X;
@@ -166,7 +166,7 @@ namespace Kemori.Forms
         }
 
         /// <summary>
-        /// A class to compare <see cref="MangaConnector"/>s
+        /// A class to compare <see cref="MangaConnector"/> s
         /// </summary>
         private class MCComp : IComparer<MangaConnector>
         {
@@ -177,7 +177,7 @@ namespace Kemori.Forms
         }
 
         /// <summary>
-        /// A class to compare <see cref="Manga"/>s
+        /// A class to compare <see cref="Manga"/> s
         /// </summary>
         private class MComp : IComparer<Manga>
         {
@@ -188,7 +188,7 @@ namespace Kemori.Forms
         }
 
         /// <summary>
-        /// A class to compare <see cref="MangaChapter"/>s in ascending order
+        /// A class to compare <see cref="MangaChapter"/> s in ascending order
         /// </summary>
         private class CCompAsc : IComparer<MangaChapter>
         {
@@ -199,7 +199,7 @@ namespace Kemori.Forms
         }
 
         /// <summary>
-        /// A class to compare <see cref="MangaChapter"/>s in ascending order
+        /// A class to compare <see cref="MangaChapter"/> s in ascending order
         /// </summary>
         private class CCompDesc : IComparer<MangaChapter>
         {
@@ -321,8 +321,7 @@ namespace Kemori.Forms
         #region Update All Cache List
 
         /// <summary>
-        /// "Update All" Button Click handler: Updates all local manga list
-        /// caches after user confirmation
+        /// "Update All" Button Click handler: Updates all local manga list caches after user confirmation
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -390,6 +389,22 @@ namespace Kemori.Forms
                 return;
 
             dgvJobs.Rows.Add ( new Object[] { Manga, Chapter, 0 } );
+        }
+
+        private void UpdateJob ( String Manga, String Chapter, Int32 Progress )
+        {
+            if ( !JobExists ( Manga, Chapter ) )
+                throw new Exception ( "Manga does not exists" );
+
+            foreach ( DataGridViewRow row in dgvJobs.Rows )
+            {
+                if ( row.Cells[0].Value.ToString ( ) == Manga &&
+                    row.Cells[1].Value.ToString ( ) == Chapter )
+                {
+                    row.Cells[2].Value = Progress;
+                    break;
+                }
+            }
         }
 
         private Boolean JobExists ( String Manga, String Chapter )
@@ -519,7 +534,8 @@ namespace Kemori.Forms
         private MangaConnector FindBookmarkConnector ( String SearchTerm, String ConnectorWebsite )
         {
             // Get the connector for the bookmark website
-            var conn = ConnectorCollection.FirstOrDefault ( con => con.Website == ConnectorWebsite );
+            var conn = ConnectorCollection
+                .FirstOrDefault ( con => con.Website == ConnectorWebsite );
 
             // If we can't even find the connector related to this bookmark then forget it
             if ( conn == null )
@@ -531,7 +547,8 @@ namespace Kemori.Forms
                     // Check for identical website
                     fav => fav.ConnectorWebsite == conn.Website &&
                     // Check for identical manga name
-                    conn.MangaList.FirstOrDefault ( m => m.Name.Contains ( SearchTerm ) ) != null
+                    conn.MangaList.FirstOrDefault ( m => m.Name
+                        .Contains ( SearchTerm ) ) != null
                 );
 
             // Give up if it doesn't
@@ -597,6 +614,8 @@ namespace Kemori.Forms
         /// </summary>
         private void UpdateMangaListUI ( )
         {
+            mangaList.BeginUpdate ( );
+
             mangaList.Items.Clear ( );
 
             var term = GetSearchTerm ( );
@@ -608,6 +627,7 @@ namespace Kemori.Forms
                 MangaCollection.Where ( man => man.Name.Contains ( term ) ).ToArray ( ) :
                 MangaCollection.ToArray ( );
 
+
             if ( MangaCollection.Length > 0 )
                 Array.Sort ( MangaCollection, new MComp ( ) );
 
@@ -616,6 +636,8 @@ namespace Kemori.Forms
 
             if ( mangaList.Items.Count > 0 )
                 mangaList.SelectedIndex = 0;
+
+            mangaList.EndUpdate ( );
         }
 
         /// <summary>
@@ -623,6 +645,8 @@ namespace Kemori.Forms
         /// </summary>
         private async Task UpdateChapterListUIAsync ( )
         {
+            chList.BeginUpdate ( );
+
             chList.Items.Clear ( );
 
             var manga = MangaCollection[CurrentManga];
@@ -636,6 +660,8 @@ namespace Kemori.Forms
                 var i = chList.Items.Add ( chapter.ToString ( ) );
                 i.ForeColor = chapter.IsDownloaded ? Color.LightBlue : Color.Black;
             }
+
+            chList.EndUpdate ( );
         }
 
         /// <summary>
@@ -645,10 +671,12 @@ namespace Kemori.Forms
         {
             btnBookmark.Text = SearchIsBookmark ? "-" : "+";
 
+            cbSearch.BeginUpdate ( );
             foreach ( var book in ConfigsManager.Bookmarks )
             {
                 cbSearch.Items.Add ( $"{book.SearchTerm}<{book.ConnectorWebsite}>" );
             }
+            cbSearch.EndUpdate ( );
         }
 
         #endregion UI Updaters
@@ -682,9 +710,9 @@ namespace Kemori.Forms
             }
         }
 
-        private void Connector_MangaDownloadProgressChanged ( MangaConnector sender, System.Net.DownloadProgressChangedEventArgs e )
+        private void Connector_MangaDownloadProgressChanged ( MangaConnector sender, MangaChapter chapter, System.Net.DownloadProgressChangedEventArgs e )
         {
-
+            UpdateJob ( chapter.Manga.Name, chapter.Name, e.ProgressPercentage );
         }
 
         #endregion Download Management

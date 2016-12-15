@@ -18,22 +18,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using System.Web;
 using Kemori.Base;
 using Kemori.Extensions;
-using Kemori.Interfaces;
+using Kemori.Abstractions;
 
 namespace Kemori.Connectors
 {
     public class MangaFoxConnector : MangaConnector
     {
-        /// <summary>
-        /// Called when the download makes progress
-        /// </summary>
-        public override event MangaDownloadProgressChangedHandler MangaDownloadProgressChanged;
-
         public MangaFoxConnector ( )
         {
             this.ID = "KemoriMangaFoxConnector";
@@ -46,49 +40,6 @@ namespace Kemori.Connectors
         public override void InitHTTP ( )
         {
             HTTP = new Classes.Fetch ( "http://mangafox.me", "http://mangafox.me" );
-        }
-
-        /// <summary>
-        /// Downloads a certain chapter
-        /// </summary>
-        /// <param name="Chapter">Chapter to download</param>
-        public override async Task DownloadChapterAsync ( MangaChapter Chapter )
-        {
-            // Loads all pages images and page count
-            Chapter.Load ( );
-
-            HTTP.DownloadProgressChanged += HTTP_DownloadProgressChanged;
-
-            // Creates a ChapterFileProcessor
-            using ( var pageProcessor = GetFileProcessor ( Chapter ) )
-            {
-                // Loops through all pages
-                for ( var i = 0 ; i < Chapter.Pages ; i++ )
-                {
-                    var page = Chapter.PageLinks[i];
-
-                    // Saves the file bytes
-                    await pageProcessor.SaveFileAsync (
-                        // 00X.ext file formats
-                        i.ToString ( ).PadLeft ( 3, '0' ) + Path.GetExtension ( page ),
-                        // Downloads the bytes from the image
-                        await HTTP.GetDataAsync ( page )
-                    );
-                }
-            }
-
-            HTTP.DownloadProgressChanged -= HTTP_DownloadProgressChanged;
-        }
-
-        /// <summary>
-        /// Pipes the progresschanged event from the <see cref="Classes.Fetch"/>
-        /// event to ours
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void HTTP_DownloadProgressChanged ( Object sender, System.Net.DownloadProgressChangedEventArgs e )
-        {
-            this.MangaDownloadProgressChanged?.Invoke ( this, e );
         }
 
         // Shamefully copied from hakuneko

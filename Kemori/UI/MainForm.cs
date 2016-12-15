@@ -17,19 +17,19 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using GUtils.UI;
 using GUtils.UI.Dialogs;
 using Kemori.Base;
+using Kemori.Classes;
 using Kemori.Controllers;
 using Kemori.Extensions;
 using Kemori.Resources;
 using Kemori.Utils;
+using ILoadProgress = System.IProgress<(System.Int32, System.String)>;
 
 namespace Kemori.Forms
 {
@@ -120,39 +120,41 @@ namespace Kemori.Forms
         /// <param name="e"></param>
         private async void MainForm_LoadAsync ( Object sender, EventArgs e )
         {
+            var PReporter = new LoadProgress ( );
+
+            // Initialize status bar
+            ssLoadProgress.Visible = true;
+
+            // Initialize Logger
             Logger.Init ( );
+
+            // Disable UI when loading
             SetUIEnabledState ( false );
 
-            await ConfigsManager.LoadAsync ( );
+
+            await ConfigsManager.LoadAsync ( PReporter );
 
             if ( ConfigsManager.SavePath == null )
                 GetSavePathPoignantly ( );
 
-            // Initialize status bar
-            ssLoadProgress.Visible = true;
-            pbLoadPorgress.Value = 0;
-            lblLoadProgress.Text = "Loading connectors...";
-
             // Load connectors
-            await LoadConnectorsAsync ( );
+            await LoadConnectorsAsync ( PReporter );
 
-            // Hide status bar
-            lblLoadProgress.Text = "Connectors loaded.";
-            pbLoadPorgress.Value = 100;
-
-            ssLoadProgressSet ( 0, "Loading local manga lists" );
+            PReporter.Report ( (0, "Loading local manga lists") );
 
             for ( var i = 0 ; i < ConnectorCollection.Length ; i++ )
             {
-                ssLoadProgressSet (
+                PReporter.Report ( (
                     Number.GetPercentage ( i, ConnectorCollection.Length ),
                     "Loading local manga lists"
-                );
+                ) );
+
                 ConnectorCollection[i].Logger = Logger;
-                await ConnectorCollection[i].LoadMangaListFromCacheAsync ( );
+                await ConnectorCollection[i]
+                    .LoadMangaListFromCacheAsync ( );
             }
 
-            ssLoadProgressSet ( 100, "All set!" );
+            PReporter.Report ( (100, "All set!") );
 
             UpdateMangaListUI ( );
 
@@ -163,51 +165,6 @@ namespace Kemori.Forms
 
             SetUIEnabledState ( true );
             ssLoadProgress.Visible = false;
-        }
-
-        /// <summary>
-        /// A class to compare <see cref="MangaConnector"/> s
-        /// </summary>
-        private class MCComp : IComparer<MangaConnector>
-        {
-            public Int32 Compare ( MangaConnector left, MangaConnector right )
-            {
-                return left.Website.CompareTo ( right.Website );
-            }
-        }
-
-        /// <summary>
-        /// A class to compare <see cref="Manga"/> s
-        /// </summary>
-        private class MComp : IComparer<Manga>
-        {
-            public Int32 Compare ( Manga left, Manga right )
-            {
-                return left.Name.CompareTo ( right.Name );
-            }
-        }
-
-        /// <summary>
-        /// A class to compare <see cref="MangaChapter"/> s in ascending order
-        /// </summary>
-        private class CCompAsc : IComparer<MangaChapter>
-        {
-            public Int32 Compare ( MangaChapter x, MangaChapter y )
-            {
-                return x.Chapter.CompareTo ( y.Chapter );
-            }
-        }
-
-        /// <summary>
-        /// A class to compare <see cref="MangaChapter"/> s in ascending order
-        /// </summary>
-        private class CCompDesc : IComparer<MangaChapter>
-        {
-            public Int32 Compare ( MangaChapter x, MangaChapter y )
-            {
-                // * -1 to reverse the order (descending)
-                return x.Chapter.CompareTo ( y.Chapter ) * -1;
-            }
         }
 
         private void dlPathButton_Click ( Object sender, EventArgs e )
@@ -226,8 +183,12 @@ namespace Kemori.Forms
         /// <param name="e"></param>
         private void chapterSelectAll_CheckedChanged ( Object sender, EventArgs e )
         {
+            chList.BeginUpdate ( );
+
             for ( var i = 0 ; i < chList.Items.Count ; i++ )
                 chList.Items[i].Checked = chapterSelectAll.Checked;
+
+            chList.EndUpdate ( );
         }
 
         /// <summary>
@@ -474,34 +435,36 @@ namespace Kemori.Forms
         /// Loads all connectors into the UI and Form
         /// </summary>
         /// <returns></returns>
-        private async Task LoadConnectorsAsync ( )
+        private async Task LoadConnectorsAsync ( ILoadProgress P = null )
         {
             await Task.Run ( ( ) =>
-              {
-                  ssLoadProgressSet ( 0, "Loading connectors" );
+            {
+                P.Report ( (0, "Loading connectors") );
 
-                  // Load connectors
-                  ConnectorCollection = ( ConnectorsManager.GetAll ( ) )
-                        .ToArray ( );
+                // Load connectors
+                ConnectorCollection = ( ConnectorsManager.GetAll ( ) )
+                      .ToArray ( );
 
-                  // Sort connectors
+                // Sort connectors
 
-                  ssLoadProgressSet ( 50, "Sorting connectors" );
-                  Array.Sort ( ConnectorCollection, new MCComp ( ) );
+                P.Report ( (50, "Sorting connectors") );
+                Array.Sort ( ConnectorCollection, ( MangaConnector x, MangaConnector y ) => x.Website.CompareTo ( y.Website ) );
 
-                  // Populate connectors combobox
-                  ssLoadProgressSet ( 75, "Populating UI with connectors" );
+                // Populate connectors combobox
+                P.Report ( (75, "Populating UI with connectors") );
 
-                  cbConnectors.InvokeEx ( cb =>
-                  {
-                      if ( ConnectorCollection.Count ( ) < 1 )
-                          return;
+                cbConnectors.InvokeEx ( cb =>
+                {
+                    if ( ConnectorCollection.Count ( ) < 1 )
+                        return;
 
-                      foreach ( var connector in ConnectorCollection )
-                          cb.Items.Add ( connector.Website );
-                      cb.SelectedIndex = 0;
-                  } );
-              } );
+                    foreach ( var connector in ConnectorCollection )
+                        cb.Items.Add ( connector.Website );
+                    cb.SelectedIndex = 0;
+                } );
+
+                P.Report ( (100, "Connectors loaded") );
+            } );
         }
 
         #endregion Connector Loader
@@ -614,30 +577,18 @@ namespace Kemori.Forms
         /// </summary>
         private void UpdateMangaListUI ( )
         {
-            mangaList.BeginUpdate ( );
-
-            mangaList.Items.Clear ( );
-
             var term = GetSearchTerm ( );
             var conn = ConnectorCollection[CurrentConnector];
 
             MangaCollection = conn.MangaList;
 
-            MangaCollection = term != "" ?
-                MangaCollection.Where ( man => man.Name.Contains ( term ) ).ToArray ( ) :
-                MangaCollection.ToArray ( );
+            MangaCollection = term != ""
+                ? MangaCollection
+                    .Where ( man => man.Name.Contains ( term ) )
+                    .ToArray ( )
+                : MangaCollection.ToArray ( );
 
-
-            if ( MangaCollection.Length > 0 )
-                Array.Sort ( MangaCollection, new MComp ( ) );
-
-            foreach ( var manga in MangaCollection )
-                mangaList.Items.Add ( manga );
-
-            if ( mangaList.Items.Count > 0 )
-                mangaList.SelectedIndex = 0;
-
-            mangaList.EndUpdate ( );
+            mangaList.SetList ( MangaCollection );
         }
 
         /// <summary>
@@ -649,17 +600,11 @@ namespace Kemori.Forms
 
             chList.Items.Clear ( );
 
-            var manga = MangaCollection[CurrentManga];
+            var manga = mangaList.SelectedItem;
             await manga.LoadAsync ( );
 
             MangaChapterCollection = manga.Chapters;
             Array.Sort ( MangaChapterCollection, new CCompDesc ( ) );
-
-            foreach ( var chapter in MangaChapterCollection )
-            {
-                var i = chList.Items.Add ( chapter.ToString ( ) );
-                i.ForeColor = chapter.IsDownloaded ? Color.LightBlue : Color.Black;
-            }
 
             chList.EndUpdate ( );
         }

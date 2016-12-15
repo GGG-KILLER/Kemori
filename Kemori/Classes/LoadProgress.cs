@@ -16,15 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace GUtils.UI.Components.DataGridView
+using System;
+
+namespace Kemori.Classes
 {
-    // Source: https://social.msdn.microsoft.com/Forums/windows/en-US/769ca9d6-1e9d-4d76-8c23-db535b2f19c2/sample-code-datagridview-progress-bar-column?forum=winformsdatacontrols
-    // This class is not made by me and all credit goes to it's original authors
-    public class DataGridViewProgressColumn : System.Windows.Forms.DataGridViewImageColumn
+    internal class LoadProgress : Progress<(Int32, String)>
     {
-        public DataGridViewProgressColumn ( )
+        public String Message { get; private set; }
+        public Int32 Progress { get; private set; }
+
+        public void Report ( (Int32 perc, String msg) value )
         {
-            CellTemplate = new DataGridViewProgressCell ( );
+            Progress = value.perc;
+            Message = value.msg;
+            OnReport ( value );
         }
     }
 }

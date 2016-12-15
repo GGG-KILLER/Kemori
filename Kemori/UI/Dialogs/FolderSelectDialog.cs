@@ -22,12 +22,12 @@ using System.Windows.Forms;
 
 namespace GUtils.UI.Dialogs
 {
-    // Souce: http://www.lyquidity.com/devblog/?p=136
-    // As stated in the website: "There’s no license as such as you are free to take and do with the code what you will." (tl;dr: this class is not under GLP-3)
+    // Souce: http://www.lyquidity.com/devblog/?p=136 As stated in the website: "There’s no license
+    // as such as you are free to take and do with the code what you will." (tl;dr: this class is not
+    // under GLP-3)
 
     /// <summary>
-    /// Wraps System.Windows.Forms.OpenFileDialog to make it present
-    /// a vista-style dialog.
+    /// Wraps System.Windows.Forms.OpenFileDialog to make it present a vista-style dialog.
     /// </summary>
     public class FolderSelectDialog
     {
@@ -175,12 +175,11 @@ namespace GUtils.UI.Dialogs
     }
 
     /// <summary>
-    /// This class is from the Front-End for Dosbox and is used to present a 'vista' dialog box to select folders.
-    /// Being able to use a vista style dialog box to select folders is much better then using the shell folder browser.
-    /// http://code.google.com/p/fed/
+    /// This class is from the Front-End for Dosbox and is used to present a 'vista' dialog box to
+    /// select folders. Being able to use a vista style dialog box to select folders is much better
+    /// then using the shell folder browser. http://code.google.com/p/fed/
     ///
-    /// Example:
-    /// var r = new Reflector("System.Windows.Forms");
+    /// Example: var r = new Reflector("System.Windows.Forms");
     /// </summary>
     public class Reflector
     {
@@ -204,7 +203,9 @@ namespace GUtils.UI.Dialogs
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="an">A specific assembly name (used if the assembly name does not tie exactly with the namespace)</param>
+        /// <param name="an">
+        /// A specific assembly name (used if the assembly name does not tie exactly with the namespace)
+        /// </param>
         /// <param name="ns">The namespace containing types to be used</param>
         public Reflector ( String an, String ns )
         {

@@ -42,7 +42,7 @@ namespace Kemori.Resources
         /// </summary>
         static ConfigsManager ( )
         {
-            ConfigPath = PathUtils.GetPathForFile ( "kemori.conf" );
+            ConfigPath = PathUtils.GetProgramDataPath ( "kemori.conf" );
             Load ( );
         }
 
@@ -148,10 +148,11 @@ namespace Kemori.Resources
         /// Loads the configurations from a file asynchronously
         /// </summary>
         /// <returns></returns>
-        public static async Task LoadAsync ( )
+        public static async Task LoadAsync ( IProgress<(Int32, String)> P = null )
         {
             try
             {
+                P.Report ( (0, "Loading configurations from file") );
                 Config = await SerializerUtils.DeserializeFromFileAsync<Configs> ( ConfigPath );
 
                 if ( Config == null )
@@ -161,6 +162,7 @@ namespace Kemori.Resources
             {
                 Config = new Configs ( );
             }
+            P.Report ( (100, "Configurations loaded.") );
         }
     }
 

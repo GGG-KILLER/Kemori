@@ -23,10 +23,22 @@ namespace Kemori.Utils
 {
     public class PathUtils
     {
-        public static String GetPathForFile ( String File )
+        public static String GetProgramDataPath ( String File )
         {
             var di = new FileInfo ( Path.Combine (
                 Environment.GetFolderPath ( Environment.SpecialFolder.CommonApplicationData ),
+                nameof ( Kemori ),
+                File
+            ) );
+            di.Directory.Create ( );
+            return di.FullName;
+        }
+
+        public static String GetAppDataPath ( String File )
+        {
+            var di = new FileInfo ( Path.Combine (
+                Environment.GetFolderPath
+                    ( Environment.SpecialFolder.ApplicationData ),
                 nameof ( Kemori ),
                 File
             ) );

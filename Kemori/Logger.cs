@@ -18,7 +18,6 @@
 
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using Kemori.Utils;
 
 namespace Kemori
@@ -29,7 +28,7 @@ namespace Kemori
 
         public Logger ( )
         {
-            LogFile = new FileInfo ( PathUtils.GetPathForFile ( "kemori.log" ) );
+            LogFile = new FileInfo ( PathUtils.GetProgramDataPath ( "kemori.log" ) );
         }
 
         public void Init ( )
@@ -56,7 +55,7 @@ namespace Kemori
             {
                 using ( var log = new StreamWriter ( LogFile.FullName, true ) )
                 {
-                    log.WriteLine( item.ToString ( ) );
+                    log.WriteLine ( item.ToString ( ) );
                     log.Flush ( );
                 }
             }

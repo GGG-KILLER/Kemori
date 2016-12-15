@@ -24,8 +24,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
 
-// Credit goes to http://stackoverflow.com/a/32426051/2671392 (user https://stackoverflow.com/users/5296568/maximilian-gerhardt)
-// Only modification(s) I made was/were: the hability to change UserAgent and add Referrer for the request.
+// Credit goes to http://stackoverflow.com/a/32426051/2671392 (user
+// https://stackoverflow.com/users/5296568/maximilian-gerhardt) Only modification(s) I made was/were:
+// the hability to change UserAgent and add Referrer for the request.
 namespace Kemori.Web
 {
     public class CloudflareEvader
@@ -36,8 +37,8 @@ namespace Kemori.Web
         public static String UA = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0";
 
         /// <summary>
-        /// Tries to return a webclient with the neccessary cookies installed
-        /// to do requests for a cloudflare protected website.
+        /// Tries to return a webclient with the neccessary cookies installed to do requests for a
+        /// cloudflare protected website.
         /// </summary>
         /// <param name="url">The page which is behind cloudflare's anti-dDoS protection</param>
         /// <param name="reff">Refferrer URL to use on the request</param>

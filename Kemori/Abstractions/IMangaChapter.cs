@@ -47,8 +47,8 @@ namespace Kemori.Abstractions
         String Name { get; }
 
         /// <summary>
-        /// Number of the chapter (1, 1.5, etc.)
-        /// If not available use sequential numbering or the index on the chapter array.
+        /// Number of the chapter (1, 1.5, etc.) If not available use sequential numbering or the
+        /// index on the chapter array.
         /// </summary>
         String Chapter { get; }
 

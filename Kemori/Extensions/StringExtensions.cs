@@ -1,17 +1,17 @@
 ﻿/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -160,7 +160,7 @@ namespace Kemori.Extensions
         /// <param name="value">Unicode character to seek</param>
         /// <param name="startIndex">Index to start at</param>
         /// <returns></returns>
-        public static Int32 LastIndexOfAfter(this String @this, Char value, Int32 startIndex = 0)
+        public static Int32 LastIndexOfAfter ( this String @this, Char value, Int32 startIndex = 0 )
         {
             startIndex = startIndex > 0 ? startIndex : @this.Length - 1;
             return @this.LastIndexOf ( value, startIndex ) + 1;
@@ -173,7 +173,7 @@ namespace Kemori.Extensions
         /// <param name="value">Unicode string to seek</param>
         /// <param name="startIndex">Index to start at</param>
         /// <returns></returns>
-        public static Int32 LastIndexOfAfter(this String @this, String value, Int32 startIndex = 0)
+        public static Int32 LastIndexOfAfter ( this String @this, String value, Int32 startIndex = 0 )
         {
             startIndex = startIndex > 0 ? startIndex : @this.Length - 1;
             return @this.LastIndexOf ( value, startIndex ) + value.Length;

@@ -22,8 +22,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Ionic.Zip;
-using Kemori.Classes;
 using Kemori.Abstractions;
+using Kemori.Classes;
 using Kemori.Resources;
 using Kemori.Utils;
 
@@ -126,7 +126,7 @@ namespace Kemori.Base
 
         #region Chapter Downloading
 
-        MangaChapter CurrentDownloadingChapter;
+        private MangaChapter CurrentDownloadingChapter;
 
         /// <summary>
         /// Downloads a certain chapter
@@ -140,7 +140,7 @@ namespace Kemori.Base
             HTTP.DownloadProgressChanged += HTTP_DownloadProgressChanged;
 
             CurrentDownloadingChapter = Chapter;
-            
+
             // Creates a ChapterFileProcessor
             using ( var pageProcessor = GetFileProcessor ( Chapter ) )
             {

@@ -21,7 +21,7 @@ using System;
 namespace Kemori.Base
 {
     [Serializable]
-    internal class Bookmark
+    public class Bookmark
     {
         public String ConnectorWebsite;
         public String SearchTerm;

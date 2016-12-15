@@ -19,7 +19,6 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using Kemori.Web;
 
 namespace Kemori.Classes
 {
@@ -39,7 +38,7 @@ namespace Kemori.Classes
         private String Referer;
 
         /// <summary>
-        /// User-Agent to be used with the 
+        /// User-Agent to be used with the
         /// </summary>
         public String UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.87 Safari/537.36";
 

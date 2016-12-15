@@ -26,15 +26,15 @@ using Kemori.Base;
 namespace Kemori.Controllers
 {
     /// <summary>
-    /// Class that manages the loading and searching of <see cref="MangaConnector"/>s
+    /// Class that manages the loading and searching of <see cref="MangaConnector"/> s
     /// </summary>
     internal class ConnectorsManager
     {
         #region Get* methods
 
         /// <summary>
-        /// Retrieves all <see cref="MangaConnector"/>s from all assemblies in the
-        /// "Connectors" folder asynchronously
+        /// Retrieves all <see cref="MangaConnector"/> s from all assemblies in the "Connectors"
+        /// folder asynchronously
         /// </summary>
         /// <returns></returns>
         public static IList<MangaConnector> GetAll ( )
@@ -93,10 +93,7 @@ namespace Kemori.Controllers
 
         #endregion Get* methods
 
-        #region Connector Handling
 
-
-        #endregion
 
         #region Reflection
 
@@ -123,8 +120,8 @@ namespace Kemori.Controllers
         }
 
         /// <summary>
-        /// Gets all public classes that are of <see cref="MangaConnector"/> type
-        /// and return their <see cref="Type"/>
+        /// Gets all public classes that are of <see cref="MangaConnector"/> type and return their
+        /// <see cref="Type"/>
         /// </summary>
         /// <param name="AssemblyFile">Path of the assembly to load</param>
         /// <returns></returns>
@@ -149,8 +146,8 @@ namespace Kemori.Controllers
         }
 
         /// <summary>
-        /// Checks a connector for exposed properties and methods,
-        /// and throws an exception when one of them is missing
+        /// Checks a connector for exposed properties and methods, and throws an exception when one
+        /// of them is missing
         /// </summary>
         /// <param name="connType">Connector's <see cref="Type"/></param>
         private static void ValidateConnector ( Type connType )
@@ -192,8 +189,7 @@ namespace Kemori.Controllers
         }
 
         /// <summary>
-        /// Returns the property value in a fresh instance of the class
-        /// or null if it doesn't exists
+        /// Returns the property value in a fresh instance of the class or null if it doesn't exists
         /// </summary>
         /// <typeparam name="T">Type of the property</typeparam>
         /// <param name="type">Type to get the property from</param>
@@ -212,8 +208,7 @@ namespace Kemori.Controllers
         }
 
         /// <summary>
-        /// Returns wether an method exists in the class (doesn't includes inherited
-        /// methods)
+        /// Returns wether an method exists in the class (doesn't includes inherited methods)
         /// </summary>
         /// <param name="type">Type to find the method in</param>
         /// <param name="methodName">Method name to search</param>

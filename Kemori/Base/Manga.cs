@@ -103,7 +103,7 @@ namespace Kemori.Base
         }
 
         /// <summary>
-        /// Returns the <see cref="Manga"/> <see cref="String"/> representation
+        /// Returns the <see cref="Manga"/><see cref="String"/> representation
         /// </summary>
         /// <returns></returns>
         public override String ToString ( )

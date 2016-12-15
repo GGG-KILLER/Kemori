@@ -34,11 +34,10 @@ namespace Kemori.Utils
         /// <returns></returns>
         public static Double LongToMB ( Int64 Bytes )
         {
-            //                    B  ->   KB   ->  MB
+            // B -> KB -> MB
             return Math.Round ( ( Bytes / 1024D / 1024D ) * 100D ) / 100D;
-            // Math.Round also seems to think I don't want
-            // the double precision numbers so the multiplication
-            // and division are necessary to preserve them
+            // Math.Round also seems to think I don't want the double precision numbers so the
+            // multiplication and division are necessary to preserve them
         }
 
         /// <summary>

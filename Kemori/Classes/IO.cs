@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Kemori.Base;
 using Kemori.Resources;
@@ -174,7 +175,7 @@ namespace Kemori.Classes
                     SafeFolderName ( Name )
                 );
             }
-            catch ( Exception e )
+            catch ( Exception )
             {
                 var l = new Logger ( );
                 l.Log ( "Failed to generate path for manga :" );
@@ -222,12 +223,15 @@ namespace Kemori.Classes
         /// <returns></returns>
         public String SafeFolderName ( String Unsafe )
         {
-            var safe = Unsafe;
+            var safe = new StringBuilder ( );
+            var badChars = Path.GetInvalidPathChars ( );
 
-            foreach ( var ch in Path.GetInvalidPathChars ( ) )
-                safe = safe.Replace ( ch.ToString ( ), string.Empty );
+            // *hopefully* faster than String.Replace
+            foreach ( var ch in Unsafe )
+                if ( !badChars.Contains ( ch ) )
+                    safe.Append ( ch );
 
-            return safe;
+            return safe.ToString ( );
         }
     }
 }

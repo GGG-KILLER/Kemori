@@ -1,4 +1,5 @@
-﻿/*
+﻿// UTF-8 Enforcer: 足の不自由なハッキング
+/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
@@ -24,7 +25,7 @@ using Kemori.Abstractions;
 namespace Kemori.Base
 {
     [Serializable]
-    public class Manga : IManga
+    public class Manga : IEquatable<Manga>, IComparable<Manga>
     {
         /// <summary>
         /// The chapters available for this manga
@@ -52,6 +53,7 @@ namespace Kemori.Base
             }
         }
 
+        private Int32 _hashCode;
         private String _hash;
 
         /// <summary>
@@ -89,7 +91,8 @@ namespace Kemori.Base
         /// </summary>
         public async Task LoadAsync ( )
         {
-            this.Chapters = ( await Connector.GetChaptersAsync ( this ) ).ToArray ( );
+            this.Chapters = ( await Connector.GetChaptersAsync ( this ) )
+                .ToArray ( );
         }
 
         /// <summary>
@@ -97,18 +100,90 @@ namespace Kemori.Base
         /// </summary>
         public void ReCalcInstanceID ( )
         {
-            _hash = $"{Connector.ID}{Connector.Website}{this.Name}{this.Link}"
-                    .GetHashCode ( )
-                    .ToString ( );
+            _hashCode = $"{Connector.ID}{Connector.Website}{this.Name}{this.Link}"
+                    .GetHashCode ( );
+            _hash = _hashCode.ToString ( );
         }
 
         /// <summary>
-        /// Returns the <see cref="Manga"/><see cref="String"/> representation
+        /// Returns the <see cref="Manga" /><see cref="String" /> representation
         /// </summary>
         /// <returns></returns>
         public override String ToString ( )
         {
             return Name;
         }
+
+        /// <summary>
+        /// Checks wether this <see cref="Manga" /> has the same values as the
+        /// <paramref name="other" />
+        /// </summary>
+        /// <param name="other"><see cref="Manga" /> to check against</param>
+        /// <returns></returns>
+        public Boolean Equals ( Manga other )
+        {
+            return ( Object ) other != null &&
+                this.InstanceID == other.InstanceID;
+        }
+
+        /// <summary>
+        /// Checks wether this <see cref="Manga" /> has the same values as the
+        /// <paramref name="obj" />
+        /// </summary>
+        /// <param name="obj"><see cref="Object" /> to check against</param>
+        /// <returns></returns>
+        public override Boolean Equals ( Object obj )
+        {
+            return this.Equals ( obj as Manga );
+        }
+
+        /// <summary>
+        /// Compares this instance with a specified <see cref="Manga" /> object
+        /// and indicates whether this instance precedes, follows, or appears in
+        /// the same position in the sort order as the specified string.
+        /// </summary>
+        /// <param name="other">
+        /// The <see cref="Manga" /> to compare with this instance
+        /// </param>
+        /// <returns></returns>
+        public Int32 CompareTo ( Manga other )
+        {
+            return this.Name.CompareTo ( other.Name );
+        }
+
+        /// <summary>
+        /// Serves as the hash function
+        /// </summary>
+        /// <returns></returns>
+        public override Int32 GetHashCode ( )
+        {
+            // Dummmy check to recalc id when needed
+            if ( InstanceID == null ) return 0;
+            return this._hashCode;
+        }
+
+        #region Operators
+
+        public static Boolean operator == ( Manga lhs, Manga rhs )
+        {
+            return lhs?.Equals ( rhs ) ?? false;
+        }
+
+        public static Boolean operator == ( Manga lhs, Object rhs )
+        {
+            return lhs == rhs as Manga;
+        }
+
+        public static Boolean operator != ( Manga lhs, Manga rhs )
+        {
+            return !( lhs == rhs );
+        }
+
+        public static Boolean operator != ( Manga lhs, Object rhs )
+        {
+            return !( lhs == rhs );
+        }
+
+        #endregion Operators
     }
 }

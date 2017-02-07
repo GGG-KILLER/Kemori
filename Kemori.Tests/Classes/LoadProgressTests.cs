@@ -18,20 +18,24 @@
  */
 
 using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Kemori.Classes
+namespace Kemori.Classes.Tests
 {
-    public class LoadProgress : Progress<(Int32, String)>
+    [TestClass ( )]
+    public class LoadProgressTests
     {
-        public String Message { get; private set; }
-
-        public Int32 Progress { get; private set; }
-
-        public void Report ( (Int32 perc, String msg) value )
+        [TestMethod ( )]
+        public void ReportTest ( )
         {
-            Progress = value.perc;
-            Message = value.msg;
-            OnReport ( value );
+            var p = new LoadProgress ( );
+            p.ProgressChanged += ( Object sender, (Int32, String) e ) =>
+            {
+                Assert.AreSame ( p, sender );
+                Assert.AreEqual ( e.Item1, 100 );
+                Assert.AreEqual ( e.Item2, "Success" );
+            };
+            p.Report ( (100, "Success") );
         }
     }
 }

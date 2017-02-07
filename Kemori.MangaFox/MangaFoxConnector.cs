@@ -1,4 +1,5 @@
-﻿/*
+﻿// UTF-8 Enforcer: 足の不自由なハッキング
+/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
@@ -22,7 +23,6 @@ using System.Threading.Tasks;
 using System.Web;
 using Kemori.Base;
 using Kemori.Extensions;
-using Kemori.Abstractions;
 
 namespace Kemori.Connectors
 {
@@ -35,11 +35,11 @@ namespace Kemori.Connectors
         }
 
         /// <summary>
-        /// Initializes the <see cref="Classes.Fetch"/> of this Connector
+        /// Initializes the <see cref="Classes.Fetch" /> of this Connector
         /// </summary>
         public override void InitHTTP ( )
         {
-            HTTP = new Classes.Fetch ( "http://mangafox.me", "http://mangafox.me" );
+            HTTP = new Classes.Fetch ( "http://mangafox.me" );
         }
 
         // Shamefully copied from hakuneko
@@ -64,7 +64,11 @@ namespace Kemori.Connectors
                     HTML = HTML.Substring ( indexStart, indexEnd - indexStart );
                     indexEnd = 0;
 
-                    // Example Entry: <li><a href="http://mangafox.me/manga/name/" rel="8894" class="series_preview manga_open">Label</a></li>
+                    // Example Entry:
+                    // <li>
+                    // <a href="http://mangafox.me/manga/name/" rel="8894"
+                    // class="series_preview manga_open">Label</a>
+                    // </li>
                     while ( ( indexStart = HTML.IndexOf ( "<li><a href=\"", indexEnd ) ) > -1 )
                     {
                         indexStart += 13;
@@ -104,10 +108,12 @@ namespace Kemori.Connectors
 
         // Shamefully copied from Hakuneko
         /// <summary>
-        /// Retrieves the list of <see cref="MangaChapter"/> from the
-        /// provided <see cref="Manga"/>
+        /// Retrieves the list of <see cref="MangaChapter" /> from the provided
+        /// <see cref="Manga" />
         /// </summary>
-        /// <param name="Manga">The <see cref="Manga"/> to get the chapters from</param>
+        /// <param name="Manga">
+        /// The <see cref="Manga" /> to get the chapters from
+        /// </param>
         /// <returns></returns>
         public async override Task<IEnumerable<MangaChapter>> GetChaptersAsync ( Manga Manga )
         {
@@ -132,8 +138,10 @@ namespace Kemori.Connectors
                     indexEnd = 0;
                     volumeIndexNext = HTML.IndexOf ( "<h3 class=\"volume\">", volumeIndexNext );
 
-                    // Example Volume: <h3 class="volume">Volume 02 <span>Chapter 5 - 8</h3>
-                    // Example Entry: <a href="http://mangafox.me/manga/manga/v02/c008/1.html" title="thx" class="tips">Manga 8</a>         <span class="title nowrap">Label</span>
+                    // Example Volume: <h3 class="volume">Volume 02 <span>Chapter
+                    // 5 - 8</h3> Example Entry: <a
+                    // href="http://mangafox.me/manga/manga/v02/c008/1.html"
+                    // title="thx" class="tips">Manga 8</a> <span class="title nowrap">Label</span>
                     while ( ( indexStart = HTML.IndexOf ( "<a href=\"", indexEnd ) ) > -1 )
                     {
                         // automatically true on first interation
@@ -176,7 +184,9 @@ namespace Kemori.Connectors
                         chLink = chLink.Trim ( );
                         chNumber = HttpUtility.HtmlDecode ( chNumber.Trim ( ) );
 
-                        // Personally don't like the "new" Hakuneko leaves in the chapter titles which causes to re-download when MangaFox decides that the chapter is now "old"
+                        // Personally don't like the "new" Hakuneko leaves in the
+                        // chapter titles which causes to re-download when
+                        // MangaFox decides that the chapter is now "old"
                         chTitle = chTitle == "new" ? String.Empty : chTitle;
 
                         chapterList.Add ( new MangaChapter
@@ -201,9 +211,10 @@ namespace Kemori.Connectors
 
         // Shamefully copied from hakuneko (barely modified)
         /// <summary>
-        /// Returns the url from all pages of the provided <see cref="MangaChapter"/>
+        /// Returns the url from all pages of the provided <see
+        /// cref="MangaChapter" />
         /// </summary>
-        /// <param name="Chapter">The <see cref="MangaChapter"/> to scrap</param>
+        /// <param name="Chapter">The <see cref="MangaChapter" /> to scrap</param>
         /// <returns></returns>
         public async override Task<String[]> GetPageLinksAsync ( MangaChapter Chapter )
         {
@@ -222,7 +233,8 @@ namespace Kemori.Connectors
                     HTML = HTML.Substring ( indexStart, indexEnd - indexStart );
                     indexEnd = 0;
 
-                    // Example Entry: <option value="1" selected="selected">1</option>
+                    // Example Entry:
+                    // <option value="1" selected="selected">1</option>
                     while ( ( indexStart = HTML.IndexOf ( "<option value=\"", indexEnd ) ) > -1 )
                     {
                         indexStart += 15;
@@ -251,14 +263,16 @@ namespace Kemori.Connectors
         /// </summary>
         /// <param name="pageLink">The link of the page to search on</param>
         /// <returns></returns>
-        public async Task<String> GetImageLinkAsync ( String pageLink )
+        public override async Task<String> GetImageLinkAsync ( String pageLink )
         {
             try
             {
                 var HTML = await HTTP.GetStringAsync ( pageLink );
 
-                // Example Entry: <img src="http://c.mfcdn.net/store/manga/10235/01-001.0/compressed/pimg001.jpg" onerror="this.src='http://l.mfcdn.net/store/manga/10235/01-001.0/compressed/pimg001.jpg'" width="728" id="image" alt="Tenshin Ranman: Lucky or Unlucky!? 1: Unlucky Nature &amp;amp; Kiss at MangaFox.me"/>
-                // use the onerror-server instead the src-server (to save bandwith for web-browsing users which will read from src-server)
+                // Example Entry:
+                // <img src="http://c.mfcdn.net/store/manga/10235/01-001.0/compressed/pimg001.jpg" onerror="this.src='http://l.mfcdn.net/store/manga/10235/01-001.0/compressed/pimg001.jpg'" width="728" id="image" alt="Tenshin Ranman: Lucky or Unlucky!? 1: Unlucky Nature &amp;amp; Kiss at MangaFox.me" />
+                // use the onerror-server instead the src-server (to save
+                // bandwith for web-browsing users which will read from src-server)
                 var indexStart = HTML.IndexOf ( "this.src='" ) + 10;
                 var indexEnd = HTML.IndexOf ( '\'', indexStart );
 

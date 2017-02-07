@@ -1,4 +1,5 @@
-﻿/*
+﻿// UTF-8 Enforcer: 足の不自由なハッキング
+/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
@@ -26,21 +27,21 @@ using Kemori.Base;
 namespace Kemori.Controllers
 {
     /// <summary>
-    /// Class that manages the loading and searching of <see cref="MangaConnector"/> s
+    /// Class that manages the loading and searching of <see
+    /// cref="MangaConnector" /> s
     /// </summary>
     internal class ConnectorsManager
     {
         #region Get* methods
 
         /// <summary>
-        /// Retrieves all <see cref="MangaConnector"/> s from all assemblies in the "Connectors"
-        /// folder asynchronously
+        /// Retrieves all <see cref="MangaConnector" /> s from all assemblies in
+        /// the "Connectors" folder asynchronously
         /// </summary>
         /// <returns></returns>
         public static IList<MangaConnector> GetAll ( )
         {
             var list = new List<MangaConnector> ( );
-            var log = new Logger ( );
 
             // Goes through each .dll found
             foreach ( var path in GetPaths ( ) )
@@ -60,8 +61,8 @@ namespace Kemori.Controllers
                     catch ( Exception e )
                     {
                         // Logs validation errors
-                        log.Log ( $"Error loading connector {connType.FullName} at \"{path}\":" );
-                        log.Log ( e );
+                        Logger.Log ( $"Error loading connector {connType.FullName} at \"{path}\":" );
+                        Logger.Log ( e );
                     }
                 }
             }
@@ -93,12 +94,10 @@ namespace Kemori.Controllers
 
         #endregion Get* methods
 
-
-
         #region Reflection
 
         /// <summary>
-        /// The type of the <see cref="MangaConnector"/> class
+        /// The type of the <see cref="MangaConnector" /> class
         /// </summary>
         private static Type MangaConnectorType = typeof ( MangaConnector );
 
@@ -120,8 +119,8 @@ namespace Kemori.Controllers
         }
 
         /// <summary>
-        /// Gets all public classes that are of <see cref="MangaConnector"/> type and return their
-        /// <see cref="Type"/>
+        /// Gets all public classes that are of <see cref="MangaConnector" />
+        /// type and return their <see cref="Type" />
         /// </summary>
         /// <param name="AssemblyFile">Path of the assembly to load</param>
         /// <returns></returns>
@@ -146,10 +145,10 @@ namespace Kemori.Controllers
         }
 
         /// <summary>
-        /// Checks a connector for exposed properties and methods, and throws an exception when one
-        /// of them is missing
+        /// Checks a connector for exposed properties and methods, and throws an
+        /// exception when one of them is missing
         /// </summary>
-        /// <param name="connType">Connector's <see cref="Type"/></param>
+        /// <param name="connType">Connector's <see cref="Type" /></param>
         private static void ValidateConnector ( Type connType )
         {
             // Properties being checked
@@ -171,7 +170,7 @@ namespace Kemori.Controllers
             var methods = new[]
             {
                 "InitHTTP",
-                "DownloadChapterAsync",
+                //"DownloadChapterAsync", // -> moved to base class
                 "UpdateMangaListAsync",
                 "GetChaptersAsync",
                 "GetPageLinksAsync",
@@ -189,7 +188,8 @@ namespace Kemori.Controllers
         }
 
         /// <summary>
-        /// Returns the property value in a fresh instance of the class or null if it doesn't exists
+        /// Returns the property value in a fresh instance of the class or null
+        /// if it doesn't exists
         /// </summary>
         /// <typeparam name="T">Type of the property</typeparam>
         /// <param name="type">Type to get the property from</param>
@@ -202,13 +202,15 @@ namespace Kemori.Controllers
             if ( prop == null )
                 return null; // Null for classes and idk what for other types
 
-            // Gets the value and attempts to convert it to T (as returns null upon failure)
+            // Gets the value and attempts to convert it to T (as returns null
+            // upon failure)
             var value = prop.GetValue ( Activator.CreateInstance ( type ) );
             return value as T;
         }
 
         /// <summary>
-        /// Returns wether an method exists in the class (doesn't includes inherited methods)
+        /// Returns wether an method exists in the class (doesn't includes
+        /// inherited methods)
         /// </summary>
         /// <param name="type">Type to find the method in</param>
         /// <param name="methodName">Method name to search</param>

@@ -1,4 +1,5 @@
-﻿/*
+﻿// UTF-8 Enforcer: 足の不自由なハッキング
+/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
@@ -56,17 +57,8 @@ namespace Kemori.Classes
         /// HTTP Utility Class
         /// </summary>
         /// <param name="URL">Main website</param>
-        public Fetch ( String URL )
-        {
-            CheckWC ( URL );
-        }
-
-        /// <summary>
-        /// HTTP Utility Class
-        /// </summary>
-        /// <param name="URL">Main website</param>
         /// <param name="Referer">Common requests' referer</param>
-        public Fetch ( String URL, String Referer ) : this ( URL )
+        public Fetch ( String Referer )
         {
             this.Referer = Referer;
         }
@@ -74,12 +66,9 @@ namespace Kemori.Classes
         /// <summary>
         /// Checks for the existence of a web client
         /// </summary>
-        /// <param name="URL">The URL we're attempting to connect to</param>
-        private void CheckWC ( String URL )
+        private void CheckWC ( )
         {
             // Creates the webclient if there isn't any
-            //if ( _wc == null )
-            //    _wc = CloudflareEvader.CreateBypassedWebClient ( URL, Referer );
             if ( _wc == null )
                 _wc = new WebClient ( );
 
@@ -118,7 +107,7 @@ namespace Kemori.Classes
         public String GetString ( String URL, String Referer = null )
         {
             this.Referer = Referer ?? this.Referer;
-            CheckWC ( URL );
+            CheckWC ( );
             return _wc.DownloadString ( URL );
         }
 
@@ -131,7 +120,7 @@ namespace Kemori.Classes
         public async Task<String> GetStringAsync ( String URL, String Referer = null )
         {
             this.Referer = Referer ?? this.Referer;
-            CheckWC ( URL );
+            CheckWC ( );
             return await _wc.DownloadStringTaskAsync ( URL );
         }
 
@@ -144,7 +133,7 @@ namespace Kemori.Classes
         public Byte[] GetData ( String URL, String Referer = null )
         {
             this.Referer = Referer ?? this.Referer;
-            CheckWC ( URL );
+            CheckWC ( );
             return _wc.DownloadData ( URL );
         }
 
@@ -157,7 +146,7 @@ namespace Kemori.Classes
         public async Task<Byte[]> GetDataAsync ( String URL, String Referer = null )
         {
             this.Referer = Referer ?? this.Referer;
-            CheckWC ( URL );
+            CheckWC ( );
             return await _wc.DownloadDataTaskAsync ( URL );
         }
 
@@ -171,6 +160,7 @@ namespace Kemori.Classes
         public void Dispose ( )
         {
             _wc?.Dispose ( );
+            _wc = null;
             GC.SuppressFinalize ( this );
         }
 

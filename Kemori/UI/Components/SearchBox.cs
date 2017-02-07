@@ -1,4 +1,5 @@
-﻿/*
+﻿// UTF-8 Enforcer: 足の不自由なハッキング
+/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
@@ -32,6 +33,44 @@ namespace Kemori.UI.Components
         private Timer KeystrokeTimer;
 
         /// <summary>
+        /// Dictates the tipying speed of the user (amount of miliseconds the
+        /// user takes to press another key)
+        /// </summary>
+        public Int32 KeystrokeInterval
+        {
+            get => KeystrokeTimer.Interval;
+            set => KeystrokeTimer.Interval = value;
+        }
+
+        #region Search Term
+
+        protected String _searchTerm;
+
+        public String SearchTerm
+        {
+            get
+            {
+                return GetSearchTerm ( );
+            }
+            set
+            {
+                SetSearchTerm ( value );
+            }
+        }
+
+        protected virtual void SetSearchTerm ( String value )
+        {
+            _searchTerm = value;
+        }
+
+        protected virtual String GetSearchTerm ( )
+        {
+            return _searchTerm;
+        }
+
+        #endregion Search Term
+
+        /// <summary>
         /// Event triggered when the search term has changed
         /// </summary>
         public event SearchTermChangedEventHandler SearchTermChanged;
@@ -42,7 +81,7 @@ namespace Kemori.UI.Components
             KeystrokeTimer = new Timer
             {
                 Enabled = false,
-                Interval = 750
+                Interval = 600
             };
             KeystrokeTimer.Tick += T_Tick;
         }
@@ -58,31 +97,45 @@ namespace Kemori.UI.Components
         /// <param name="books"></param>
         public void SetItemList ( IEnumerable<String> books )
         {
+            this.BeginUpdate ( );
+
             Items.Clear ( );
             Items.AddRange ( books.ToArray ( ) );
+
+            this.EndUpdate ( );
         }
 
-        // The search term will only ever be updated when the timer stops running. The timer also
-        // only stops running after a tick.
-        private void T_Tick ( object sender, EventArgs e )
+        // The search term will only ever be updated when the timer stops
+        // running. The timer also only stops running after a tick.
+        private void T_Tick ( Object sender, EventArgs e )
         {
             OnSearchTermChanged ( this.Text );
+
             KeystrokeTimer.Stop ( );
             Typing = false;
         }
 
+        /// <summary>
+        /// Raises the <see cref="SearchBox" />.KeyUp event.
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnKeyUp ( KeyEventArgs e )
         {
-            base.OnKeyUp ( e );
-
             if ( !Typing ) Typing = true;
+            KeystrokeTimer.Stop ( );
             KeystrokeTimer.Start ( );
+
+            base.OnKeyUp ( e );
         }
 
-        // This triggers the SearchTermChanged event
-        protected void OnSearchTermChanged ( String term )
+        /// <summary>
+        /// Raises the <see cref="SearchBox" />.SearchTermChanged event.
+        /// </summary>
+        /// <param name="term"></param>
+        protected virtual void OnSearchTermChanged ( String term )
         {
-            SearchTermChanged?.Invoke ( this, term );
+            SearchTerm = term;
+            SearchTermChanged?.Invoke ( this, SearchTerm );
         }
     }
 }

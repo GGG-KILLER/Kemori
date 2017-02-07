@@ -1,4 +1,5 @@
-﻿/*
+﻿// UTF-8 Enforcer: 足の不自由なハッキング
+/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
@@ -22,42 +23,48 @@ using Kemori.Utils;
 
 namespace Kemori
 {
-    public class Logger
+    public static class Logger
     {
-        private readonly FileInfo LogFile;
+        private static readonly Object _lock = new Object ( );
+        private static readonly FileInfo _logFile;
+        private static readonly StreamWriter _logStream;
+        private const Int32 MaxLogSize = 2 * 1024 * 1024;
 
-        public Logger ( )
+        static Logger ( )
         {
-            LogFile = new FileInfo ( PathUtils.GetProgramDataPath ( "kemori.log" ) );
+            _logFile = new FileInfo (
+                PathUtils.GetProgramDataPath ( "kemori.log" ) );
+            _logStream = new StreamWriter ( _logFile.FullName, true )
+            {
+                AutoFlush = true,
+                NewLine = "\n"
+            };
         }
 
-        public void Init ( )
+        public static void Init ( )
         {
-            lock ( LogFile )
-            {// 2 MB size limit
-                if ( LogFile.Exists && LogFile.Length > 2 * 1024 * 1024 )
+            lock ( _lock )
+            {
+                // 2 MB size limit
+                if ( _logFile.Exists && _logFile.Length > MaxLogSize )
                 {
-                    LogFile.Delete ( );
+                    _logFile.Delete ( );
                 }
 
                 var b = new String ( '=', 24 );
-                this.Log ( String.Empty );
-                this.Log ( b );
-                this.Log ( $"=== {( DateTime.Now.ToString ( "%Y-%m-%dT%H:%M:%S" ) )} +0000 ===" );
-                this.Log ( b );
-                this.Log ( String.Empty );
+                Log ( String.Empty );
+                Log ( b );
+                Log ( $"=== {( DateTime.Now.ToString ( "%Y-%m-%dT%H:%M:%S" ) )} +0000 ===" );
+                Log ( b );
+                Log ( String.Empty );
             }
         }
 
-        public void Log ( Object item )
+        public static void Log ( Object item )
         {
-            lock ( LogFile )
+            lock ( _lock )
             {
-                using ( var log = new StreamWriter ( LogFile.FullName, true ) )
-                {
-                    log.WriteLine ( item.ToString ( ) );
-                    log.Flush ( );
-                }
+                _logStream.WriteLine ( item.ToString ( ) );
             }
         }
     }

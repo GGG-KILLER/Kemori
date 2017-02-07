@@ -1,4 +1,5 @@
-﻿/*
+﻿// UTF-8 Enforcer: 足の不自由なハッキング
+/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
@@ -17,11 +18,10 @@
  */
 
 using System;
-using Kemori.Abstractions;
 
 namespace Kemori.Base
 {
-    public class MangaChapter : IMangaChapter
+    public class MangaChapter
     {
         /// <summary>
         /// Chapter number (1, 1.5, etc.) Use manga chapter array index if not existent.
@@ -29,8 +29,8 @@ namespace Kemori.Base
         public String Chapter { get; set; }
 
         /// <summary>
-        /// Wether this <see cref="MangaChapter"/> was already downloaded (does not check if it was
-        /// actually sucessfuly downloaded)
+        /// Wether this <see cref="MangaChapter" /> was already downloaded (does
+        /// not check if it was actually sucessfuly downloaded)
         /// </summary>
         public Boolean IsDownloaded
         {
@@ -109,7 +109,7 @@ namespace Kemori.Base
         }
 
         /// <summary>
-        /// Returns the <see cref="MangaChapter"/><see cref="String"/> representation
+        /// Returns the <see cref="MangaChapter" /><see cref="String" /> representation
         /// </summary>
         /// <returns></returns>
         public override String ToString ( )

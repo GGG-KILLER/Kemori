@@ -1,4 +1,5 @@
-﻿/*
+﻿// UTF-8 Enforcer: 足の不自由なハッキング
+/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
@@ -22,17 +23,21 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Ionic.Zip;
-using Kemori.Abstractions;
 using Kemori.Classes;
 using Kemori.Resources;
 using Kemori.Utils;
 
 namespace Kemori.Base
 {
-    public abstract class MangaConnector : IMangaConnector
-    {
-        public Logger Logger;
+    /// <summary>
+    /// Defined the handler that will receive the progress of the manga downloader
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    public delegate void MangaDownloadProgressChangedHandler ( MangaConnector sender, MangaChapter chapter, System.Net.DownloadProgressChangedEventArgs e );
 
+    public abstract class MangaConnector
+    {
         /// <summary>
         /// Base manga connector
         /// </summary>
@@ -41,7 +46,6 @@ namespace Kemori.Base
             InitHTTP ( );
             InitIO ( );
             MangaList = new Manga[0];
-            Logger = new Logger ( );
         }
 
         /// <summary>
@@ -165,7 +169,8 @@ namespace Kemori.Base
         }
 
         /// <summary>
-        /// Pipes the progresschanged event from the <see cref="Classes.Fetch"/> event to ours
+        /// Pipes the progresschanged event from the <see cref="Classes.Fetch" />
+        /// event to ours
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -202,11 +207,21 @@ namespace Kemori.Base
         /// </summary>
         public abstract void InitHTTP ( );
 
+        /// <summary>
+        /// Returns an image URL for a provided manga page URL
+        /// </summary>
+        /// <param name="pageLink">Manga page URK</param>
+        /// <returns></returns>
+        public abstract Task<String> GetImageLinkAsync ( String pageLink );
+
         // Shamefully copied from hakuneko (few modifications):
         /// <summary>
-        /// Normalizes chapter numbers so they all follow the same style inside the application
+        /// Normalizes chapter numbers so they all follow the same style inside
+        /// the application
         /// </summary>
-        /// <param name="ChapterNumber">The string that contains the chapter number</param>
+        /// <param name="ChapterNumber">
+        /// The string that contains the chapter number
+        /// </param>
         /// <returns></returns>
         public String NormalizeChapterNumber ( String ChapterNumber )
         {
@@ -235,8 +250,8 @@ namespace Kemori.Base
             var posLastSpace = ChapterNumber.LastIndexOf ( ' ' ); // Sometimes chapter numbers are preceded by text
             if ( posFirstSpace > -1 && posLastSpace > -1 )
             {
-                // NOTE: in case numbers are at beginning and ending, the number at beginning got
-                //       higher priority
+                // NOTE: in case numbers are at beginning and ending, the number
+                //       at beginning got higher priority
                 if ( Is.Number ( ChapterNumber.Substring ( 0, posFirstSpace ) ) )
                 {
                     ChapterNumber = ChapterNumber.Substring ( 0, posFirstSpace );
@@ -347,7 +362,8 @@ namespace Kemori.Base
         #endregion FS Processor
 
         /// <summary>
-        /// Saves all bytes to the file according to the user's settings (compression, etc.)
+        /// Saves all bytes to the file according to the user's settings
+        /// (compression, etc.)
         /// </summary>
         /// <param name="Chapter">Chapter that is being downloaded</param>
         public static ChapterFileProcessor GetFileProcessor ( MangaChapter Chapter )
@@ -413,7 +429,7 @@ namespace Kemori.Base
         }
 
         /// <summary>
-        /// Returns the <see cref="MangaConnector"/>'s <see cref="String"/> representation
+        /// Returns the <see cref="MangaConnector" />'s <see cref="String" /> representation
         /// </summary>
         /// <returns></returns>
         public override String ToString ( )

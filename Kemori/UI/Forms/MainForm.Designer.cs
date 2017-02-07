@@ -54,10 +54,8 @@ namespace Kemori.Forms
             this.dlPathTextbox = new System.Windows.Forms.TextBox();
             this.dlPathButton = new System.Windows.Forms.Button();
             this.cbConnectors = new System.Windows.Forms.ComboBox();
-            this.cbSearch = new System.Windows.Forms.ComboBox();
             this.chapterSelectAll = new System.Windows.Forms.CheckBox();
             this.dlButton = new System.Windows.Forms.Button();
-            this.btnBookmark = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.ssLoadProgress = new System.Windows.Forms.StatusStrip();
             this.lblLoadProgress = new System.Windows.Forms.ToolStripStatusLabel();
@@ -70,6 +68,8 @@ namespace Kemori.Forms
             this.mangaList = new Kemori.UI.Components.MangaListBox(this.components);
             this.chList = new Kemori.UI.Components.ChapterListView(this.components);
             this.chNameHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.bookmarkCB = new Kemori.UI.Components.BookmarkComboBox(this.components);
+            this.btnBookmarkAction = new System.Windows.Forms.Button();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -134,7 +134,7 @@ namespace Kemori.Forms
             this.dlPathButton.TabIndex = 3;
             this.dlPathButton.Text = "...";
             this.dlPathButton.UseVisualStyleBackColor = true;
-            this.dlPathButton.Click += new System.EventHandler(this.dlPathButton_Click);
+            this.dlPathButton.Click += new System.EventHandler(this.DlPathButton_Click);
             // 
             // cbConnectors
             // 
@@ -145,18 +145,7 @@ namespace Kemori.Forms
             this.cbConnectors.Name = "cbConnectors";
             this.cbConnectors.Size = new System.Drawing.Size(121, 21);
             this.cbConnectors.TabIndex = 6;
-            this.cbConnectors.SelectedIndexChanged += new System.EventHandler(this.cbConnectors_SelectedIndexChanged);
-            // 
-            // cbSearch
-            // 
-            this.cbSearch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbSearch.FormattingEnabled = true;
-            this.cbSearch.Location = new System.Drawing.Point(63, 38);
-            this.cbSearch.Name = "cbSearch";
-            this.cbSearch.Size = new System.Drawing.Size(237, 21);
-            this.cbSearch.TabIndex = 7;
-            this.cbSearch.TextChanged += new System.EventHandler(this.cbSearch_TextChanged);
+            this.cbConnectors.SelectedIndexChanged += new System.EventHandler(this.CbConnectors_SelectedIndexChanged);
             // 
             // chapterSelectAll
             // 
@@ -167,7 +156,7 @@ namespace Kemori.Forms
             this.chapterSelectAll.TabIndex = 11;
             this.chapterSelectAll.Text = "Chapter List";
             this.chapterSelectAll.UseVisualStyleBackColor = true;
-            this.chapterSelectAll.CheckedChanged += new System.EventHandler(this.chapterSelectAll_CheckedChanged);
+            this.chapterSelectAll.CheckedChanged += new System.EventHandler(this.ChapterSelectAll_CheckedChanged);
             // 
             // dlButton
             // 
@@ -179,18 +168,6 @@ namespace Kemori.Forms
             this.dlButton.TabIndex = 12;
             this.dlButton.Text = "Download";
             this.dlButton.UseVisualStyleBackColor = true;
-            this.dlButton.Click += new System.EventHandler(this.dlButton_Click);
-            // 
-            // btnBookmark
-            // 
-            this.btnBookmark.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBookmark.Location = new System.Drawing.Point(306, 34);
-            this.btnBookmark.Name = "btnBookmark";
-            this.btnBookmark.Size = new System.Drawing.Size(26, 26);
-            this.btnBookmark.TabIndex = 13;
-            this.btnBookmark.Text = "+";
-            this.btnBookmark.UseVisualStyleBackColor = true;
-            this.btnBookmark.Click += new System.EventHandler(this.btnBookmark_ClickAsync);
             // 
             // label4
             // 
@@ -234,7 +211,7 @@ namespace Kemori.Forms
             this.updateAllBtn.TabIndex = 16;
             this.updateAllBtn.Text = "Update All";
             this.updateAllBtn.UseVisualStyleBackColor = true;
-            this.updateAllBtn.Click += new System.EventHandler(this.updateAllBtn_ClickAsync);
+            this.updateAllBtn.Click += new System.EventHandler(this.UpdateAllBtn_ClickAsync);
             // 
             // dgvJobs
             // 
@@ -303,11 +280,31 @@ namespace Kemori.Forms
             // 
             this.chNameHeader.Text = "Chapter";
             // 
+            // bookmarkCB
+            // 
+            this.bookmarkCB.FormattingEnabled = true;
+            this.bookmarkCB.Location = new System.Drawing.Point(63, 38);
+            this.bookmarkCB.Name = "bookmarkCB";
+            this.bookmarkCB.SearchTerm = null;
+            this.bookmarkCB.Size = new System.Drawing.Size(237, 21);
+            this.bookmarkCB.TabIndex = 23;
+            // 
+            // btnBookmarkAction
+            // 
+            this.btnBookmarkAction.Location = new System.Drawing.Point(307, 36);
+            this.btnBookmarkAction.Name = "btnBookmarkAction";
+            this.btnBookmarkAction.Size = new System.Drawing.Size(25, 23);
+            this.btnBookmarkAction.TabIndex = 24;
+            this.btnBookmarkAction.Text = "+";
+            this.btnBookmarkAction.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(610, 548);
+            this.Controls.Add(this.btnBookmarkAction);
+            this.Controls.Add(this.bookmarkCB);
             this.Controls.Add(this.chList);
             this.Controls.Add(this.mangaList);
             this.Controls.Add(label5);
@@ -315,11 +312,9 @@ namespace Kemori.Forms
             this.Controls.Add(this.updateAllBtn);
             this.Controls.Add(this.ssLoadProgress);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.btnBookmark);
             this.Controls.Add(this.dlButton);
             this.Controls.Add(this.chapterSelectAll);
             this.Controls.Add(label3);
-            this.Controls.Add(this.cbSearch);
             this.Controls.Add(this.cbConnectors);
             this.Controls.Add(label2);
             this.Controls.Add(this.dlPathButton);
@@ -344,10 +339,8 @@ namespace Kemori.Forms
         private System.Windows.Forms.TextBox dlPathTextbox;
         private System.Windows.Forms.Button dlPathButton;
         private System.Windows.Forms.ComboBox cbConnectors;
-        private System.Windows.Forms.ComboBox cbSearch;
         private System.Windows.Forms.CheckBox chapterSelectAll;
         private System.Windows.Forms.Button dlButton;
-        private System.Windows.Forms.Button btnBookmark;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.StatusStrip ssLoadProgress;
         private System.Windows.Forms.ToolStripStatusLabel lblLoadProgress;
@@ -360,5 +353,7 @@ namespace Kemori.Forms
         private UI.Components.MangaListBox mangaList;
         private UI.Components.ChapterListView chList;
         private System.Windows.Forms.ColumnHeader chNameHeader;
+        private UI.Components.BookmarkComboBox bookmarkCB;
+        private System.Windows.Forms.Button btnBookmarkAction;
     }
 }

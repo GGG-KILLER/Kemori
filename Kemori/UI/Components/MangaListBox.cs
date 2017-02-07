@@ -1,4 +1,5 @@
-﻿/*
+﻿// UTF-8 Enforcer: 足の不自由なハッキング
+/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
@@ -25,8 +26,8 @@ using Kemori.Base;
 
 namespace Kemori.UI.Components
 {
-    // We won't take any measures to protect aganinst modifying Items as the application itself won't
-    // be even touching it
+    // We won't take any measures to protect aganinst modifying Items as the
+    // application itself won't be even touching it
     public partial class MangaListBox : ListBox
     {
         /// <summary>
@@ -43,10 +44,9 @@ namespace Kemori.UI.Components
             this.MangaList = new List<Manga> ( );
         }
 
-        public MangaListBox ( IContainer container )
+        public MangaListBox ( IContainer container ) : this ( )
         {
             container.Add ( this );
-            InitializeComponent ( );
         }
 
         public void SetList ( IEnumerable<Manga> List )

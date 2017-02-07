@@ -1,4 +1,5 @@
-﻿/*
+﻿// UTF-8 Enforcer: 足の不自由なハッキング
+/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
@@ -32,9 +33,9 @@ namespace Kemori
         {
             Application.EnableVisualStyles ( );
             Application.SetCompatibleTextRenderingDefault ( false );
-            using ( var mainForm = new MainForm ( ) )
+            using ( var mf = new MainForm ( ) )
             {
-                Application.Run ( mainForm );
+                Application.Run ( mf );
             }
         }
     }

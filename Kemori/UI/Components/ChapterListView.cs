@@ -1,4 +1,5 @@
-﻿/*
+﻿// UTF-8 Enforcer: 足の不自由なハッキング
+/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
@@ -96,6 +97,22 @@ namespace Kemori.UI.Components
             foreach ( var Item in List )
             {
                 Add ( Item );
+            }
+
+            this.EndUpdate ( );
+        }
+
+        /// <summary>
+        /// Sets the selected status for all items in the listview
+        /// </summary>
+        /// <param name="flag"></param>
+        public void AllSelected ( Boolean flag )
+        {
+            this.BeginUpdate ( );
+
+            foreach ( var kv in ChapterList )
+            {
+                kv.Value.Checked = flag;
             }
 
             this.EndUpdate ( );

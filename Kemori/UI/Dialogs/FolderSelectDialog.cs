@@ -1,3 +1,4 @@
+// UTF-8 Enforcer: ???????????
 /*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
@@ -22,12 +23,13 @@ using System.Windows.Forms;
 
 namespace GUtils.UI.Dialogs
 {
-    // Souce: http://www.lyquidity.com/devblog/?p=136 As stated in the website: "There’s no license
-    // as such as you are free to take and do with the code what you will." (tl;dr: this class is not
-    // under GLP-3)
+    // Souce: http://www.lyquidity.com/devblog/?p=136 As stated in the website:
+    //        "There’s no license as such as you are free to take and do with the
+    // code what you will." (tl;dr: this class is not under GLP-3)
 
     /// <summary>
-    /// Wraps System.Windows.Forms.OpenFileDialog to make it present a vista-style dialog.
+    /// Wraps System.Windows.Forms.OpenFileDialog to make it present a
+    /// vista-style dialog.
     /// </summary>
     public class FolderSelectDialog
     {
@@ -52,7 +54,8 @@ namespace GUtils.UI.Dialogs
         #region Properties
 
         /// <summary>
-        /// Gets/Sets the initial folder to be selected. A null value selects the current directory.
+        /// Gets/Sets the initial folder to be selected. A null value selects the
+        /// current directory.
         /// </summary>
         public String InitialDirectory
         {
@@ -66,7 +69,7 @@ namespace GUtils.UI.Dialogs
         public String Title
         {
             get { return ofd.Title; }
-            set { ofd.Title = value == null ? "Select a folder" : value; }
+            set { ofd.Title = value ?? "Select a folder"; }
         }
 
         /// <summary>
@@ -175,9 +178,10 @@ namespace GUtils.UI.Dialogs
     }
 
     /// <summary>
-    /// This class is from the Front-End for Dosbox and is used to present a 'vista' dialog box to
-    /// select folders. Being able to use a vista style dialog box to select folders is much better
-    /// then using the shell folder browser. http://code.google.com/p/fed/
+    /// This class is from the Front-End for Dosbox and is used to present a
+    /// 'vista' dialog box to select folders. Being able to use a vista style
+    /// dialog box to select folders is much better then using the shell folder
+    /// browser. http://code.google.com/p/fed/
     ///
     /// Example: var r = new Reflector("System.Windows.Forms");
     /// </summary>
@@ -204,7 +208,8 @@ namespace GUtils.UI.Dialogs
         /// Constructor
         /// </summary>
         /// <param name="an">
-        /// A specific assembly name (used if the assembly name does not tie exactly with the namespace)
+        /// A specific assembly name (used if the assembly name does not tie
+        /// exactly with the namespace)
         /// </param>
         /// <param name="ns">The namespace containing types to be used</param>
         public Reflector ( String an, String ns )
@@ -296,7 +301,8 @@ namespace GUtils.UI.Dialogs
         }
 
         /// <summary>
-        /// Calls method 'func' on object 'obj' which is of type 'type' passing parameters 'parameters'
+        /// Calls method 'func' on object 'obj' which is of type 'type' passing
+        /// parameters 'parameters'
         /// </summary>
         /// <param name="type">The type of 'obj'</param>
         /// <param name="obj">The object on which to excute function 'func'</param>
@@ -309,7 +315,8 @@ namespace GUtils.UI.Dialogs
         }
 
         /// <summary>
-        /// Calls method 'func' on object 'obj' which is of type 'type' passing parameters 'parameters'
+        /// Calls method 'func' on object 'obj' which is of type 'type' passing
+        /// parameters 'parameters'
         /// </summary>
         /// <param name="type">The type of 'obj'</param>
         /// <param name="obj">The object on which to excute function 'func'</param>

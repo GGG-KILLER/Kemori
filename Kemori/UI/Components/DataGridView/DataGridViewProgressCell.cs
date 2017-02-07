@@ -1,4 +1,5 @@
-﻿/*
+﻿// UTF-8 Enforcer: 足の不自由なハッキング
+/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
@@ -24,8 +25,8 @@ namespace GUtils.UI.Components.DataGridView
     using System.Windows.Forms;
 
     // Modified from: https://social.msdn.microsoft.com/Forums/windows/en-US/769ca9d6-1e9d-4d76-8c23-db535b2f19c2/sample-code-datagridview-progress-bar-column?forum=winformsdatacontrols
-    // Disclaimer: I did not make this, all credits goes to it's original author(s), I only take
-    //             credit for the modifications I made on it:
+    // Disclaimer: I did not make this, all credits goes to it's original
+    //             author(s), I only take credit for the modifications I made on it:
     // - Add usings
     // - Static color field
     // - Removed unused backColorBrush
@@ -37,7 +38,8 @@ namespace GUtils.UI.Components.DataGridView
         // Used to make custom cell consistent with a DataGridViewImageCell
         private static readonly Image emptyImage;
 
-        // Create the Color only once to avoid having to re-create it all the time (and for each instance)
+        // Create the Color only once to avoid having to re-create it all the
+        // time (and for each instance)
         private static readonly Color progressBarColor = Color.FromArgb ( 203, 235, 108 );
 
         static DataGridViewProgressCell ( )
@@ -50,9 +52,9 @@ namespace GUtils.UI.Components.DataGridView
             this.ValueType = typeof ( Int32 );
         }
 
-        // Method required to make the Progress Cell consistent with the default Image Cell. The
-        // default Image Cell assumes an Image as a value, although the value of the Progress Cell is
-        // an int.
+        // Method required to make the Progress Cell consistent with the default
+        // Image Cell. The default Image Cell assumes an Image as a value,
+        // although the value of the Progress Cell is an int.
         protected override Object GetFormattedValue ( Object value, Int32 rowIndex, ref DataGridViewCellStyle cellStyle, TypeConverter valueTypeConverter, TypeConverter formattedValueTypeConverter, DataGridViewDataErrorContexts context )
         {
             return emptyImage;

@@ -1,4 +1,5 @@
-﻿/*
+﻿// UTF-8 Enforcer: 足の不自由なハッキング
+/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
@@ -25,7 +26,7 @@ using Kemori.Utils;
 
 namespace Kemori.Resources
 {
-    internal class ConfigsManager
+    public class ConfigsManager
     {
         /// <summary>
         /// The path where the configuration file is being stored

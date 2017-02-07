@@ -1,4 +1,5 @@
-﻿/*
+﻿// UTF-8 Enforcer: 足の不自由なハッキング
+/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
@@ -49,7 +50,8 @@ namespace Kemori.Utils
         /// <param name="FileName">File name to save serialized object</param>
         public static async Task SerializeToFileAsync ( Object graph, String FileName )
         {
-            // BinaryFormmater doesn't has support for asynchronous operations, so we have to do this
+            // BinaryFormmater doesn't has support for asynchronous operations,
+            // so we have to do this
             await Task.Run ( ( ) => SerializeToFile ( graph, FileName ) );
         }
 

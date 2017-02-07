@@ -1,17 +1,21 @@
+// UTF-8 Enforcer: 足の不自由なハッキング
 using System;
 using System.ComponentModel;
 
-public static class ISynchronizeInvokeExtensions
+namespace Kemori.Utils
 {
-    public static void InvokeEx<T> ( this T @this, Action<T> action ) where T : ISynchronizeInvoke
+    public static class ISynchronizeInvokeExtensions
     {
-        if ( @this.InvokeRequired )
+        public static void InvokeEx<T> ( this T @this, Action<T> action ) where T : ISynchronizeInvoke
         {
-            @this.Invoke ( action, new object[] { @this } );
-        }
-        else
-        {
-            action?.Invoke ( @this );
+            if ( @this.InvokeRequired )
+            {
+                @this.Invoke ( action, new Object[] { @this } );
+            }
+            else
+            {
+                action?.Invoke ( @this );
+            }
         }
     }
 }

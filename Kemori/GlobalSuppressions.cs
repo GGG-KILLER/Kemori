@@ -1,4 +1,5 @@
-﻿/*
+﻿// UTF-8 Enforcer: 足の不自由なハッキング
+/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
@@ -16,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// This file is used by Code Analysis to maintain SuppressMessage attributes that are applied to this
-// project. Project-level suppressions either have no target or are given a specific target and
-// scoped to a namespace, type, member, etc.
+// This file is used by Code Analysis to maintain SuppressMessage attributes that
+// are applied to this project. Project-level suppressions either have no target
+// or are given a specific target and scoped to a namespace, type, member, etc.
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage ( "Naming", "CC0029:Disposables Should Call Suppress Finalize", Justification = "Does not actually uses any resources that need to be disposed", Scope = "member", Target = "~M:Kemori.Classes.IO.TempAppend.Dispose" )]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage ( "Usage", "CC0067:Virtual Method Called On Constructor", Justification = "The method needs to be called for initalization but the user might modify it.", Scope = "member", Target = "~M:Kemori.Base.MangaConnector.#ctor" )]

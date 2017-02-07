@@ -1,4 +1,5 @@
-﻿/*
+﻿// UTF-8 Enforcer: 足の不自由なハッキング
+/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
@@ -25,8 +26,9 @@ using System.Threading;
 using System.Web;
 
 // Credit goes to http://stackoverflow.com/a/32426051/2671392 (user
-// https://stackoverflow.com/users/5296568/maximilian-gerhardt) Only modification(s) I made was/were:
-// the hability to change UserAgent and add Referrer for the request.
+// https://stackoverflow.com/users/5296568/maximilian-gerhardt) Only
+// modification(s) I made was/were: the hability to change UserAgent and add
+// Referrer for the request.
 namespace Kemori.Web
 {
     public class CloudflareEvader
@@ -37,10 +39,12 @@ namespace Kemori.Web
         public static String UA = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0";
 
         /// <summary>
-        /// Tries to return a webclient with the neccessary cookies installed to do requests for a
-        /// cloudflare protected website.
+        /// Tries to return a webclient with the neccessary cookies installed to
+        /// do requests for a cloudflare protected website.
         /// </summary>
-        /// <param name="url">The page which is behind cloudflare's anti-dDoS protection</param>
+        /// <param name="url">
+        /// The page which is behind cloudflare's anti-dDoS protection
+        /// </param>
         /// <param name="reff">Refferrer URL to use on the request</param>
         /// <returns>A WebClient object or null on failure</returns>
         public static WebClient CreateBypassedWebClient ( String url, String reff = null )
@@ -145,7 +149,7 @@ namespace Kemori.Web
            (user https://stackoverflow.com/users/541404/cameron-tinker) for these functions
         */
 
-        public static CookieCollection GetAllCookiesFromHeader ( string strHeader, string strHost )
+        public static CookieCollection GetAllCookiesFromHeader ( String strHeader, String strHost )
         {
             var al = new ArrayList ( );
             var cc = new CookieCollection ( );
@@ -157,7 +161,7 @@ namespace Kemori.Web
             return cc;
         }
 
-        private static ArrayList ConvertCookieHeaderToArrayList ( string strCookHeader )
+        private static ArrayList ConvertCookieHeaderToArrayList ( String strCookHeader )
         {
             strCookHeader = strCookHeader.Replace ( "\r", "" );
             strCookHeader = strCookHeader.Replace ( "\n", "" );
@@ -179,14 +183,14 @@ namespace Kemori.Web
             return al;
         }
 
-        private static CookieCollection ConvertCookieArraysToCookieCollection ( ArrayList al, string strHost )
+        private static CookieCollection ConvertCookieArraysToCookieCollection ( ArrayList al, String strHost )
         {
             var cc = new CookieCollection ( );
 
             var alcount = al.Count;
-            string strEachCook;
-            string[] strEachCookParts;
-            for ( int i = 0 ; i < alcount ; i++ )
+            String strEachCook;
+            String[] strEachCookParts;
+            for ( Int32 i = 0 ; i < alcount ; i++ )
             {
                 strEachCook = al[i].ToString ( );
                 strEachCookParts = strEachCook.Split ( ';' );
@@ -194,10 +198,10 @@ namespace Kemori.Web
                 var strCNameAndCValue = string.Empty;
                 var strPNameAndPValue = string.Empty;
                 var strDNameAndDValue = string.Empty;
-                string[] NameValuePairTemp;
+                String[] NameValuePairTemp;
                 var cookTemp = new Cookie ( );
 
-                for ( int j = 0 ; j < intEachCookPartsCount ; j++ )
+                for ( Int32 j = 0 ; j < intEachCookPartsCount ; j++ )
                 {
                     if ( j == 0 )
                     {

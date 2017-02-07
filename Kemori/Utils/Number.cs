@@ -1,4 +1,5 @@
-﻿/*
+﻿// UTF-8 Enforcer: 足の不自由なハッキング
+/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
@@ -36,8 +37,9 @@ namespace Kemori.Utils
         {
             // B -> KB -> MB
             return Math.Round ( ( Bytes / 1024D / 1024D ) * 100D ) / 100D;
-            // Math.Round also seems to think I don't want the double precision numbers so the
-            // multiplication and division are necessary to preserve them
+            // Math.Round also seems to think I don't want the double precision
+            // numbers so the multiplication and division are necessary to
+            // preserve them
         }
 
         /// <summary>

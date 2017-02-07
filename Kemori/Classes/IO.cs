@@ -1,4 +1,5 @@
-﻿/*
+﻿// UTF-8 Enforcer: 足の不自由なハッキング
+/*
  * Kemori - An open source and community friendly manga downloader
  * Copyright (C) 2016  GGG KILLER
  *
@@ -34,7 +35,7 @@ namespace Kemori.Classes
         /// <summary>
         /// Root of the restricted IO
         /// </summary>
-        private String Root;
+        public String Root { get; private set; }
 
         #region TempAppend
 
@@ -81,13 +82,76 @@ namespace Kemori.Classes
         }
 
         /// <summary>
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="sanitizeFolderNames"></param>
+        /// <returns></returns>
+        public String NormalizePath ( String path, Boolean sanitizeFolderNames = true )
+        {
+            var stack = new Stack<String> ( );
+            var parts = path.Split ( Path.DirectorySeparatorChar,
+                Path.AltDirectorySeparatorChar );
+
+            foreach ( var part in parts )
+            {
+                switch ( part )
+                {
+                    case ".":
+                        continue;
+                    case "..":
+                        if ( stack.Count < 1 )
+                            throw new Exception ( "Path cannot go a directory up from the root." );
+                        else
+                            stack.Pop ( );
+                        break;
+
+                    default:
+                        stack.Push ( sanitizeFolderNames ?
+                            SafeFolderName ( part ) :
+                            part );
+                        break;
+                }
+            }
+
+            return String.Join ( Path.DirectorySeparatorChar.ToString ( ), stack );
+        }
+
+        /// <summary>
         /// Returns the path inside the fixed environment
         /// </summary>
         /// <param name="path">Path to get</param>
         /// <returns></returns>
         private String GetPath ( String path )
         {
-            return Path.Combine ( Root, path.Replace ( "..", "." ) );
+            return Path.Combine (
+                Root,
+                NormalizePath ( path )
+            );
+        }
+
+        public Boolean FileInUse ( FileInfo file )
+        {
+            FileStream stream = null;
+
+            try
+            {
+                stream = file.Open ( FileMode.Open, FileAccess.ReadWrite, FileShare.None );
+            }
+            catch ( IOException )
+            {
+                // the file is unavailable because it is: still being written to
+                // or being processed by another thread or does not exist (has
+                // already been processed)
+                return true;
+            }
+            finally
+            {
+                if ( stream != null )
+                    stream.Close ( );
+            }
+
+            //file is not locked
+            return false;
         }
 
         /// <summary>
@@ -105,11 +169,23 @@ namespace Kemori.Classes
 
             // Deletes the file if it exists and we're not on append mode
             if ( fi.Exists && !Append )
+            {
                 fi.Delete ( );
+            }
+
+            // Creates the file if it doesn't exists
+            fi.Create ( );
 
             // Creates and opens the file for writing
-            using ( var writer = fi.OpenWrite ( ) )
-                writer.Write ( Data, ( Int32 ) ( !Append && fi.Exists ? 0 : fi.Length ), Data.Length );
+            using ( var writer = fi.Open (
+                Append ? FileMode.Append : FileMode.Open,
+                FileAccess.Write,
+                FileShare.None ) )
+            {
+                writer.Write ( Data, 0, Data.Length );
+                writer.Flush ( );
+                writer.Close ( );
+            }
         }
 
         /// <summary>
@@ -129,10 +205,11 @@ namespace Kemori.Classes
         public void WriteAllLines ( String Path, IEnumerable<String> Lines )
         {
             var bytes = new List<Byte> ( );
-
+            var newLine = Encoding.UTF8.GetBytes ( Environment.NewLine );
             foreach ( var Line in Lines )
             {
                 bytes.AddRange ( Encoding.UTF8.GetBytes ( Line ) );
+                bytes.AddRange ( newLine );
             }
 
             WriteData ( Path, bytes.ToArray ( ) );
@@ -148,16 +225,13 @@ namespace Kemori.Classes
         }
 
         /// <summary>
-        /// Returns a path for a provided <see cref="Manga"/>
+        /// Returns a path for a provided <see cref="Manga" />
         /// </summary>
-        /// <param name="Manga"><see cref="Manga"/> to return path for</param>
+        /// <param name="Manga"><see cref="Manga" /> to return path for</param>
         /// <returns></returns>
         public String PathForManga ( Manga Manga )
         {
-            return Path.Combine (
-                ConfigsManager.SavePath,
-                SafeFolderName ( Manga.Name )
-            );
+            return PathForManga ( Manga.ToString ( ) );
         }
 
         /// <summary>
@@ -176,10 +250,10 @@ namespace Kemori.Classes
             }
             catch ( Exception )
             {
-                var l = new Logger ( );
-                l.Log ( "Failed to generate path for manga :" );
-                l.Log ( $"\tName: {Name}" );
-                l.Log ( $"\tSafeName: {SafeFolderName ( Name )}" );
+                // If we fail, log all possibly related information
+                Logger.Log ( "Failed to generate path for manga :" );
+                Logger.Log ( $"\tName: {Name}" );
+                Logger.Log ( $"\tSafeName: {SafeFolderName ( Name )}" );
 
                 return Path.Combine (
                     ConfigsManager.SavePath,
@@ -189,15 +263,17 @@ namespace Kemori.Classes
         }
 
         /// <summary>
-        /// Returns a path for a provided <see cref="MangaChapter"/>
+        /// Returns a path for a provided <see cref="MangaChapter" />
         /// </summary>
-        /// <param name="Chapter"><see cref="MangaChapter"/> to return path for</param>
+        /// <param name="Chapter">
+        /// <see cref="MangaChapter" /> to return path for
+        /// </param>
         /// <returns></returns>
         public String PathForChapter ( MangaChapter Chapter )
         {
             return Path.Combine (
-                PathForManga ( Chapter.Manga ),
-                SafeFolderName ( Chapter.Name )
+                PathForManga ( Chapter.Manga.ToString ( ) ),
+                SafeFolderName ( Chapter.ToString ( ) )
             );
         }
 
@@ -216,16 +292,33 @@ namespace Kemori.Classes
         }
 
         /// <summary>
-        /// Returns a path stripped of invalid path characters
+        /// Removes all invalid folder name characters from a provided folder name
         /// </summary>
-        /// <param name="Unsafe">Unstripped path</param>
+        /// <param name="Unsafe">Unsafe folder name</param>
         /// <returns></returns>
         public String SafeFolderName ( String Unsafe )
         {
             var safe = new StringBuilder ( );
             var badChars = Path.GetInvalidPathChars ( );
 
-            // *hopefully* faster than String.Replace
+            // faster than String.Replace
+            foreach ( var ch in Unsafe )
+                if ( !badChars.Contains ( ch ) )
+                    safe.Append ( ch );
+
+            return safe.ToString ( );
+        }
+
+        /// <summary>
+        /// Removes all invalid file name characters from a provided filename
+        /// </summary>
+        /// <param name="Unsafe">Unsafe file name</param>
+        /// <returns></returns>
+        public String SafeFileName ( String Unsafe )
+        {
+            var safe = new StringBuilder ( );
+            var badChars = Path.GetInvalidFileNameChars ( );
+
             foreach ( var ch in Unsafe )
                 if ( !badChars.Contains ( ch ) )
                     safe.Append ( ch );

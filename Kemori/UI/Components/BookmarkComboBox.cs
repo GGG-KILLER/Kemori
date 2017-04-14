@@ -30,7 +30,13 @@ namespace Kemori.UI.Components
             }
             set
             {
-                SelectedIndex = Array.IndexOf ( Bookmarks, value );
+                try
+                {
+                    if ( value == null )
+                        return;
+                    SelectedIndex = Array.IndexOf ( Bookmarks, value );
+                }
+                catch { return; }
             }
         }
 

@@ -70,12 +70,17 @@ namespace Kemori.Forms
             this.chNameHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.bookmarkCB = new Kemori.UI.Components.BookmarkComboBox(this.components);
             this.btnBookmarkAction = new System.Windows.Forms.Button();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
             label5 = new System.Windows.Forms.Label();
             this.ssLoadProgress.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvJobs)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -99,7 +104,8 @@ namespace Kemori.Forms
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new System.Drawing.Point(13, 66);
+            label3.Dock = System.Windows.Forms.DockStyle.Top;
+            label3.Location = new System.Drawing.Point(0, 0);
             label3.Name = "label3";
             label3.Size = new System.Drawing.Size(62, 13);
             label3.TabIndex = 8;
@@ -150,9 +156,10 @@ namespace Kemori.Forms
             // chapterSelectAll
             // 
             this.chapterSelectAll.AutoSize = true;
-            this.chapterSelectAll.Location = new System.Drawing.Point(308, 65);
+            this.chapterSelectAll.Dock = System.Windows.Forms.DockStyle.Top;
+            this.chapterSelectAll.Location = new System.Drawing.Point(0, 0);
             this.chapterSelectAll.Name = "chapterSelectAll";
-            this.chapterSelectAll.Size = new System.Drawing.Size(82, 17);
+            this.chapterSelectAll.Size = new System.Drawing.Size(292, 17);
             this.chapterSelectAll.TabIndex = 11;
             this.chapterSelectAll.Text = "Chapter List";
             this.chapterSelectAll.UseVisualStyleBackColor = true;
@@ -254,11 +261,13 @@ namespace Kemori.Forms
             // 
             // mangaList
             // 
+            this.mangaList.Connector = null;
+            this.mangaList.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.mangaList.FormattingEnabled = true;
-            this.mangaList.Location = new System.Drawing.Point(16, 82);
+            this.mangaList.Location = new System.Drawing.Point(0, 16);
             this.mangaList.Name = "mangaList";
             this.mangaList.SelectedItem = null;
-            this.mangaList.Size = new System.Drawing.Size(284, 199);
+            this.mangaList.Size = new System.Drawing.Size(286, 199);
             this.mangaList.TabIndex = 21;
             // 
             // chList
@@ -266,12 +275,13 @@ namespace Kemori.Forms
             this.chList.CheckBoxes = true;
             this.chList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.chNameHeader});
+            this.chList.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.chList.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.chList.LabelWrap = false;
-            this.chList.Location = new System.Drawing.Point(308, 82);
+            this.chList.Location = new System.Drawing.Point(0, 16);
             this.chList.MultiSelect = false;
             this.chList.Name = "chList";
-            this.chList.Size = new System.Drawing.Size(290, 199);
+            this.chList.Size = new System.Drawing.Size(292, 199);
             this.chList.TabIndex = 22;
             this.chList.UseCompatibleStateImageBehavior = false;
             this.chList.View = System.Windows.Forms.View.Details;
@@ -283,9 +293,11 @@ namespace Kemori.Forms
             // bookmarkCB
             // 
             this.bookmarkCB.FormattingEnabled = true;
+            this.bookmarkCB.KeystrokeInterval = 600;
             this.bookmarkCB.Location = new System.Drawing.Point(63, 38);
             this.bookmarkCB.Name = "bookmarkCB";
             this.bookmarkCB.SearchTerm = null;
+            this.bookmarkCB.SelectedItem = null;
             this.bookmarkCB.Size = new System.Drawing.Size(237, 21);
             this.bookmarkCB.TabIndex = 23;
             // 
@@ -298,6 +310,24 @@ namespace Kemori.Forms
             this.btnBookmarkAction.Text = "+";
             this.btnBookmarkAction.UseVisualStyleBackColor = true;
             // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Location = new System.Drawing.Point(16, 66);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.mangaList);
+            this.splitContainer1.Panel1.Controls.Add(label3);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.chList);
+            this.splitContainer1.Panel2.Controls.Add(this.chapterSelectAll);
+            this.splitContainer1.Size = new System.Drawing.Size(582, 215);
+            this.splitContainer1.SplitterDistance = 286;
+            this.splitContainer1.TabIndex = 25;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -305,30 +335,32 @@ namespace Kemori.Forms
             this.ClientSize = new System.Drawing.Size(610, 548);
             this.Controls.Add(this.btnBookmarkAction);
             this.Controls.Add(this.bookmarkCB);
-            this.Controls.Add(this.chList);
-            this.Controls.Add(this.mangaList);
             this.Controls.Add(label5);
             this.Controls.Add(this.dgvJobs);
             this.Controls.Add(this.updateAllBtn);
             this.Controls.Add(this.ssLoadProgress);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.dlButton);
-            this.Controls.Add(this.chapterSelectAll);
-            this.Controls.Add(label3);
             this.Controls.Add(this.cbConnectors);
             this.Controls.Add(label2);
             this.Controls.Add(this.dlPathButton);
             this.Controls.Add(label1);
             this.Controls.Add(this.dlPathTextbox);
+            this.Controls.Add(this.splitContainer1);
             this.MinimumSize = new System.Drawing.Size(626, 587);
             this.Name = "MainForm";
             this.ShowIcon = false;
             this.Text = "Kemori";
             this.Load += new System.EventHandler(this.MainForm_LoadAsync);
-            this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.ssLoadProgress.ResumeLayout(false);
             this.ssLoadProgress.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvJobs)).EndInit();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -355,5 +387,6 @@ namespace Kemori.Forms
         private System.Windows.Forms.ColumnHeader chNameHeader;
         private UI.Components.BookmarkComboBox bookmarkCB;
         private System.Windows.Forms.Button btnBookmarkAction;
+        private System.Windows.Forms.SplitContainer splitContainer1;
     }
 }

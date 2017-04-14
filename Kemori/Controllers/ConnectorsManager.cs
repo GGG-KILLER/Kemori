@@ -32,67 +32,37 @@ namespace Kemori.Controllers
     /// </summary>
     internal class ConnectorsManager
     {
-        #region Get* methods
-
         /// <summary>
         /// Retrieves all <see cref="MangaConnector" /> s from all assemblies in
         /// the "Connectors" folder asynchronously
         /// </summary>
         /// <returns></returns>
-        public static IList<MangaConnector> GetAll ( )
+        public static MangaConnector[] GetAll ( )
         {
-            var list = new List<MangaConnector> ( );
-
-            // Goes through each .dll found
-            foreach ( var path in GetPaths ( ) )
-            {
-                // Gets all public classes that inherit MangaConnector on it
-                var connTypes = GetConnectorsTypes ( path );
-
-                // Goes through each of the classes
-                foreach ( var connType in connTypes )
+            return GetPaths ( )
+                .Select ( GetConnectorsTypes )
+                .Where ( types => types.Count > 0 )
+                .Select ( types => ( IEnumerable<Type> ) types )
+                .Aggregate ( ( typesA, typesB ) => typesA.Concat ( typesB ) )
+                .Select ( connectorType =>
                 {
-                    // And only adds them to the list if they are valid
                     try
                     {
-                        ValidateConnector ( connType );
-                        list.Add ( ( MangaConnector ) Activator.CreateInstance ( connType ) );
+                        var instance = ( MangaConnector ) Activator.CreateInstance ( connectorType );
+                        ValidateConnector ( connectorType, instance );
+                        return instance;
                     }
-                    catch ( Exception e )
+                    catch ( Exception ex )
                     {
                         // Logs validation errors
-                        Logger.Log ( $"Error loading connector {connType.FullName} at \"{path}\":" );
-                        Logger.Log ( e );
+                        Logger.Log ( $"Error loading connector {connectorType.FullName} at \"{connectorType.Assembly.Location}\":" );
+                        Logger.Log ( ex );
+                        return null;
                     }
-                }
-            }
-
-            return list;
+                } )
+                .Where ( connector => connector != null )
+                .ToArray ( );
         }
-
-        /// <summary>
-        /// Returns the connector that contains the provided ID
-        /// </summary>
-        /// <param name="ID"></param>
-        /// <returns></returns>
-        public static MangaConnector GetByID ( String ID )
-        {
-            return ( GetAll ( ) )
-                .FirstOrDefault ( conn => conn.ID == ID );
-        }
-
-        /// <summary>
-        /// Returns the list of connectors that target the provided website
-        /// </summary>
-        /// <param name="Website">Website to search for</param>
-        /// <returns></returns>
-        public static IEnumerable<MangaConnector> GetByWebsite ( String Website )
-        {
-            return ( GetAll ( ) )
-                .Where ( conn => conn.Website == Website );
-        }
-
-        #endregion Get* methods
 
         #region Reflection
 
@@ -149,7 +119,7 @@ namespace Kemori.Controllers
         /// exception when one of them is missing
         /// </summary>
         /// <param name="connType">Connector's <see cref="Type" /></param>
-        private static void ValidateConnector ( Type connType )
+        private static void ValidateConnector ( Type connType, MangaConnector inst )
         {
             // Properties being checked
             var properties = new[]
@@ -161,7 +131,7 @@ namespace Kemori.Controllers
             // Checks each of them
             foreach ( var property in properties )
             {
-                var propVal = GetPropertyValueOrDefault<String> ( connType, property );
+                var propVal = GetPropertyValueOrDefault<String> ( connType, property, inst );
                 if ( propVal == null )
                     throw new Exception ( $"Connector is missing the \"{property}\" property or value is null." );
             }
@@ -194,7 +164,7 @@ namespace Kemori.Controllers
         /// <typeparam name="T">Type of the property</typeparam>
         /// <param name="type">Type to get the property from</param>
         /// <param name="propName">Property name</param>
-        private static T GetPropertyValueOrDefault<T> ( Type type, String propName ) where T : class
+        private static T GetPropertyValueOrDefault<T> ( Type type, String propName, MangaConnector inst ) where T : class
         {
             // Attempts to get the property descriptor
             var prop = type.GetProperty ( propName );
@@ -204,7 +174,7 @@ namespace Kemori.Controllers
 
             // Gets the value and attempts to convert it to T (as returns null
             // upon failure)
-            var value = prop.GetValue ( Activator.CreateInstance ( type ) );
+            var value = prop.GetValue ( inst );
             return value as T;
         }
 

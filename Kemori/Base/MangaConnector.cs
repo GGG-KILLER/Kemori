@@ -408,6 +408,7 @@ namespace Kemori.Base
             catch ( Exception )
             {
                 // For some reason the config didn't load
+                this.MangaList = new Manga[0];
                 return;
             }
         }

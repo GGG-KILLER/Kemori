@@ -25,6 +25,7 @@ namespace Kemori
 {
     public static class Logger
     {
+        const String Sep = "=====================================";
         private static readonly Object _lock = new Object ( );
         private static readonly FileInfo _logFile;
         private static readonly StreamWriter _logStream;
@@ -37,7 +38,7 @@ namespace Kemori
             _logStream = new StreamWriter ( _logFile.FullName, true )
             {
                 AutoFlush = true,
-                NewLine = "\n"
+                NewLine = "\n" // UNIX Line Endings
             };
         }
 
@@ -47,25 +48,30 @@ namespace Kemori
             {
                 // 2 MB size limit
                 if ( _logFile.Exists && _logFile.Length > MaxLogSize )
-                {
                     _logFile.Delete ( );
-                }
 
-                var b = new String ( '=', 24 );
-                Log ( String.Empty );
-                Log ( b );
-                Log ( $"=== {( DateTime.Now.ToString ( "%Y-%m-%dT%H:%M:%S" ) )} +0000 ===" );
-                Log ( b );
-                Log ( String.Empty );
+                Log ( );
+                Log ( Sep );
+                Log ( String.Format ( "=== {0:0000}-{1:00}-{2:00}T{3:00}-{4:00}-{5:00}.{6:000} {7:0000} ===",
+                    DateTime.Now.Year,
+                    DateTime.Now.Month,
+                    DateTime.Now.Day,
+                    DateTime.Now.Hour,
+                    DateTime.Now.Minute,
+                    DateTime.Now.Second,
+                    DateTime.Now.Millisecond,
+                    DateTimeOffset.Now.Offset.Hours ) );
+                Log ( Sep );
+                Log ( );
             }
         }
+
+        public static void Log ( ) => Log ( String.Empty );
 
         public static void Log ( Object item )
         {
             lock ( _lock )
-            {
                 _logStream.WriteLine ( item.ToString ( ) );
-            }
         }
     }
 }

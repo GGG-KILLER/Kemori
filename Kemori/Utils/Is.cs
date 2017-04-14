@@ -33,8 +33,7 @@ namespace Kemori.Utils
         /// <returns></returns>
         public static Boolean Number ( String s )
         {
-            Int32 resulti; Single results; Double resultd;
-            return Int32.TryParse ( s, out resulti ) || Single.TryParse ( s, out results ) || Double.TryParse ( s, out resultd );
+            return Int32.TryParse ( s, out var resulti ) || Single.TryParse ( s, out var results ) || Double.TryParse ( s, out var resultd );
         }
     }
 }

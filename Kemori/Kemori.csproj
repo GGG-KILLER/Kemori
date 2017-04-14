@@ -114,7 +114,6 @@
     <Compile Include="UI\Components\SearchBox.Designer.cs">
       <DependentUpon>SearchBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Forms\ProportionalResize.cs" />
     <Compile Include="Utils\InvokeExOfISynchronizeInvoke.cs" />
     <Compile Include="Utils\Is.cs" />
     <Compile Include="Utils\Number.cs" />

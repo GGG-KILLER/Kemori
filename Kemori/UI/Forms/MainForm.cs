@@ -19,7 +19,6 @@
 
 using System;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -44,21 +43,6 @@ namespace Kemori.Forms
         /// Forms
         private MangaConnector[] ConnectorCollection;
 
-        /// <summary>
-        /// Initial width of the chapter list
-        /// </summary>
-        private readonly Int32 chListInitialWidth;
-
-        /// <summary>
-        /// The initial list of the manga list
-        /// </summary>
-        private readonly Int32 mangaListInitialWidth;
-
-        /// <summary>
-        /// Initial X position of the chapter list
-        /// </summary>
-        private readonly Int32 chListInitialX;
-
         #endregion Fields
 
         #region Properties
@@ -82,15 +66,6 @@ namespace Kemori.Forms
         public MainForm ( )
         {
             InitializeComponent ( );
-
-            chListInitialX = chList.Location.X;
-            mangaListInitialWidth = mangaList.Width;
-            chListInitialWidth = chList.Width;
-        }
-
-        private void ConfigsManager_SavePathChanged ( Object sender, System.ComponentModel.PropertyChangedEventArgs e )
-        {
-            dlPathTextbox.Text = ConfigsManager.SavePath;
         }
 
         #region Event listeners
@@ -102,6 +77,7 @@ namespace Kemori.Forms
         /// <param name="e"></param>
         private async void MainForm_LoadAsync ( Object sender, EventArgs e )
         {
+
             var PReporter = new LoadProgress ( );
             PReporter.ProgressChanged += ( s, ee ) => SsLoadProgressSet ( ee.Item1, ee.Item2 );
 
@@ -146,6 +122,11 @@ namespace Kemori.Forms
 
             SetUIEnabledState ( true );
             ssLoadProgress.Visible = false;
+        }
+
+        private void ConfigsManager_SavePathChanged ( Object sender, System.ComponentModel.PropertyChangedEventArgs e )
+        {
+            dlPathTextbox.Text = ConfigsManager.SavePath;
         }
 
         private void DlPathButton_Click ( Object sender, EventArgs e )
@@ -224,18 +205,6 @@ namespace Kemori.Forms
             chNameHeader.Width = chList.Width - 2;
         }
 
-        private void MainForm_Resize ( Object sender, EventArgs e )
-        {
-            var proportion = ( ( Double ) this.Width ) / ( ( Double ) this.MinimumSize.Width );
-
-            chList.Location = new Point ( ( Int32 ) Math.Floor ( chListInitialX * proportion ), chList.Location.Y );
-            chapterSelectAll.Location = new Point ( chList.Location.X, chapterSelectAll.Location.Y );
-
-            chList.Width = ( Int32 ) Math.Floor ( chListInitialWidth * proportion );
-
-            mangaList.Width = ( Int32 ) Math.Ceiling ( mangaListInitialWidth * proportion );
-        }
-
         #endregion Resizing Handlers
 
         #endregion Event listeners
@@ -275,19 +244,18 @@ namespace Kemori.Forms
         {
             await Task.Run ( ( ) =>
             {
-                P.Report ( (0, "Loading connectors") );
+                P?.Report ( (0, "Loading connectors") );
 
                 // Load connectors
-                ConnectorCollection = ( ConnectorsManager.GetAll ( ) )
-                      .ToArray ( );
+                ConnectorCollection = ConnectorsManager.GetAll ( );
 
                 // Sort connectors
 
-                P.Report ( (50, "Sorting connectors") );
+                P?.Report ( (50, "Sorting connectors") );
                 Array.Sort ( ConnectorCollection, ( MangaConnector x, MangaConnector y ) => x.Website.CompareTo ( y.Website ) );
 
                 // Populate connectors combobox
-                P.Report ( (75, "Populating UI with connectors") );
+                P?.Report ( (75, "Populating UI with connectors") );
 
                 cbConnectors.InvokeEx ( cb =>
                 {
@@ -299,7 +267,7 @@ namespace Kemori.Forms
                     cb.SelectedIndex = 0;
                 } );
 
-                P.Report ( (100, "Connectors loaded") );
+                P?.Report ( (100, "Connectors loaded") );
             } );
         }
 

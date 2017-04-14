@@ -153,7 +153,7 @@ namespace Kemori.Resources
         {
             try
             {
-                P.Report ( (0, "Loading configurations from file") );
+                P?.Report ( (0, "Loading configurations from file") );
                 Config = await SerializerUtils.DeserializeFromFileAsync<Configs> ( ConfigPath );
 
                 if ( Config == null )
@@ -163,7 +163,7 @@ namespace Kemori.Resources
             {
                 Config = new Configs ( );
             }
-            P.Report ( (100, "Configurations loaded.") );
+            P?.Report ( (100, "Configurations loaded.") );
         }
     }
 

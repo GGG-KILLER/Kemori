@@ -33,7 +33,25 @@ namespace Kemori.UI.Components
         /// <summary>
         /// Manga List
         /// </summary>
-        private IList<Manga> MangaList;
+        private IList<Manga> _mangaList;
+
+        private MangaConnector _connector;
+
+        /// <summary>
+        /// The connector being used with this <see cref="MangaListBox"/>
+        /// </summary>
+        public MangaConnector Connector
+        {
+            get => _connector;
+            set => SetConnector ( value );
+        }
+
+        private void SetConnector ( MangaConnector value )
+        {
+            _connector = value;
+            if ( value == null )
+                return;
+        }
 
         public MangaListBox ( )
         {
@@ -41,7 +59,7 @@ namespace Kemori.UI.Components
 
             SetStyle ( ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true );
 
-            this.MangaList = new List<Manga> ( );
+            this._mangaList = new List<Manga> ( );
         }
 
         public MangaListBox ( IContainer container ) : this ( )
@@ -55,7 +73,7 @@ namespace Kemori.UI.Components
 
             List = List.OrderBy ( x => x.Name );
 
-            this.MangaList.Clear ( );
+            this._mangaList.Clear ( );
             this.Items.Clear ( );
             foreach ( var Item in List )
             {
@@ -68,18 +86,18 @@ namespace Kemori.UI.Components
         public void Add ( Manga Item )
         {
             this.Items.Add ( Item.Name ); // For rendering purposes
-            this.MangaList.Add ( Item );
+            this._mangaList.Add ( Item );
         }
 
         public Boolean Contains ( Manga Item )
         {
-            return this.MangaList.Contains ( Item );
+            return this._mangaList.Contains ( Item );
         }
 
         public void Remove ( Manga Item )
         {
             this.Items.Remove ( Item.Name ); // For rendering purposes
-            this.MangaList.Remove ( Item );
+            this._mangaList.Remove ( Item );
         }
 
         public new Manga SelectedItem
